@@ -24,4 +24,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\vertexShader.shader" />
+    <None Include="res\shaders\fragmentShader.shader" />
+  </ItemGroup>
 </Project>
