@@ -5,7 +5,18 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <cassert>
 
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+#include <glm/ext/scalar_constants.hpp> // glm::pi
+
+#include "GL_Debug.h";
+#include "Camera.h"
+#include "UserInputs.h"
 
 static std::string ParseShader(const std::string& filepath)
 {
@@ -79,8 +90,8 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
-    const int windowWidth = 640;
-    const int windowHeight = 480;
+    const int windowWidth = 1280;
+    const int windowHeight = 720;
     const char* windowTitle = "GALINT: MC Clone";
 
     GLFWwindow* window;
@@ -108,16 +119,32 @@ int main(void)
         return -1;
     }
 
+    glEnable(GL_DEBUG_OUTPUT);
+    //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, NULL);
+
     float positions[] = {
-        -0.5f, -0.5f, //0
-         0.5f, -0.5f, //1
-         0.5f,  0.5f, //2
-        -0.5f,  0.5f, //3
+        //front face
+        -0.5f, -0.5f, //0.0f, //0
+         0.5f, -0.5f, //0.0f, //1
+         0.5f,  0.5f, //0.0f, //2
+        -0.5f,  0.5f //0.0f, //3
+
+        //back face
+        //-0.4f, -0.6f, 1.0f, //4
+         //0.4f, -0.6f, 1.0f, //5
+         //0.4f,  0.6f, 1.0f, //6
+        //-0.4f,  0.6f, 1.0f, //7
     };
 
     unsigned int indices[] = {
+        //front face
         0, 1, 2,
         2, 3, 0
+
+        //back face
+        //4, 5, 6,
+        //6, 7, 4
     };
 
     unsigned int vao;
@@ -145,6 +172,13 @@ int main(void)
     glUseProgram(shader);
 
 
+    glm::mat4 pvm = camera(2.0f, glm::vec2(0.0f, 0.0f));
+
+    int location = glGetUniformLocation(shader, "u_PVM");
+    assert(location != -1);
+    glUniformMatrix4fv(location, 1, GL_FALSE, &pvm[0][0]);
+
+    glfwSetKeyCallback(window, keyCallback);
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     /* Loop until the user closes the window */
@@ -153,6 +187,8 @@ int main(void)
         /* Render here */
         //glClearColor(250.0f / 255.0f, 119.0f / 255.0f, 110.0f / 255.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
