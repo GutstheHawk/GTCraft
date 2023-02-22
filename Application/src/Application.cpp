@@ -89,7 +89,6 @@ int main(void)
 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
     const int windowWidth = 1280;
     const int windowHeight = 720;
     const char* windowTitle = "GALINT: MC Clone";
@@ -122,6 +121,8 @@ int main(void)
     glEnable(GL_DEBUG_OUTPUT);
     //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(glDebugOutput, NULL);
+
+   // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     float positions[] = {
         //front face

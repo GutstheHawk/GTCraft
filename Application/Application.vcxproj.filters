@@ -32,6 +32,9 @@
     <ClInclude Include="src\UserInputs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\GL_Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\vendor\glm\detail\_features.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -893,13 +896,10 @@
     <ClInclude Include="src\vendor\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GL_Debug.h">
+    <ClInclude Include="src\vendor\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\vendor\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Texture.h">
@@ -907,8 +907,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\vertexShader.shader" />
-    <None Include="res\shaders\fragmentShader.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl">
       <Filter>Header Files</Filter>
     </None>
