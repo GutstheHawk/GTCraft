@@ -3,7 +3,7 @@
 Camera::Camera()
 	: Projection(glm::perspective(95.0f, 16.0f / 9.0f, 0.1f, 100.f)),
 	View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0))),
-	Model(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)))
+	Model(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)))
 {
 }
 
