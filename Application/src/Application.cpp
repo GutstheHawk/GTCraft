@@ -198,7 +198,7 @@ int main(void)
     {
         /* Render here */
         //glClearColor(250.0f / 255.0f, 119.0f / 255.0f, 110.0f / 255.0f, 1.0f);
-
+        
 		glm::mat4 pvm = cam->ReturnPVM();
 
 		int location = glGetUniformLocation(shader, "u_PVM");
