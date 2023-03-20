@@ -18,8 +18,16 @@ public:
 	bool LEFT_PRESSED;
 	bool RIGHT_PRESSED;
 
+	float pitch = -90.0f;
+	float yaw = 0.0f;
+
+	float xpos = 0.0f;
+	float ypos = 0.0f;
+	float lastX = 0.0f;
+	float lastY = 0.0f;
+
 	PlayerControls(Camera*);
 	~PlayerControls();
-	void ProcessInputs() const;
+	void ProcessInputs();
 };
 

@@ -8,7 +8,7 @@
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    //Mouse Movement
+
     //Camera* cam = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
 	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
 
@@ -91,4 +91,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
 		pc->RIGHT_PRESSED = false;
 
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
+	
+	pc->xpos = xpos;
+	pc->ypos = ypos;
 }

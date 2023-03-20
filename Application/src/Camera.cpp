@@ -27,6 +27,11 @@ void Camera::SetCameraSpeed(float deltaTime)
 	cameraSpeed = 5 * deltaTime;
 }
 
+void Camera::SetCameraFront(glm::vec3 camFront)
+{
+	cameraFront = camFront;
+}
+
 
 void Camera::MoveForward()
 {
