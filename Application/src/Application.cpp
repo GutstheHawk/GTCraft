@@ -130,16 +130,10 @@ int main(void)
 
     float positions[] = {
         //front face
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f,
-        
-        //back face
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f
+        -0.5f, -0.5f, 0.0f, 0.0f, //0
+         0.5f, -0.5f, 1.0f, 0.0f, //1
+         0.5f,  0.5f, 1.0f, 1.0f, //2
+        -0.5f,  0.5f, 0.0f, 1.0f  //3
 
     };
 
@@ -191,13 +185,14 @@ int main(void)
     glUseProgram(shader);
 
     Camera* cam = new Camera();
-    glfwSetWindowUserPointer(window, cam);
+    PlayerControls* pc = new PlayerControls(cam);
+    glfwSetWindowUserPointer(window, pc);
 
     glfwSetKeyCallback(window, keyCallback);
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-   /*Texture texture("res/textures/TheChernoLogo.png");
-	texture.Bind();
+    Texture texture("res/textures/dirtfront.png");
+    texture.Bind();
 	int texLocation = glGetUniformLocation(shader, "u_Texture");
 	if (texLocation == -1)
 	{
@@ -206,7 +201,12 @@ int main(void)
 	printf("TexLocation: %d\n", texLocation);
 	glUniform1i(texLocation, 0);*/
 
-    glEnable(GL_DEPTH_TEST);
+    //Time
+    float deltaTime = 0.0f;
+    float currentFrame = 0.0f;
+    float lastFrame = 0.0f;
+
+    //glEnable(GL_DEPTH_TEST);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -215,13 +215,25 @@ int main(void)
         //glClearColor(250.0f / 255.0f, 119.0f / 255.0f, 110.0f / 255.0f, 1.0f);
         double current_time = glfwGetTime();
 
-		glm::mat4 pvm = cam->ReturnPVM();
+        currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        cam->SetCameraSpeed(deltaTime);
 
-        int location = glGetUniformLocation(shader, "u_PVM");
-		glUniformMatrix4fv(location, 1, GL_FALSE, &pvm[0][0]);
+        pc->ProcessInputs();
 
-        int timeLoc = glGetUniformLocation(shader, "uTime");
-        //glUniform1f(timeLoc, current_time);
+		glm::mat4 projection = cam->ReturnProjection();
+        glm::mat4 view = cam->ReturnView();
+        glm::mat4 model = cam->ReturnModel();
+
+		int location = glGetUniformLocation(shader, "projection");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
+
+		location = glGetUniformLocation(shader, "view");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &view[0][0]);
+
+		location = glGetUniformLocation(shader, "model");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
 
         //glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

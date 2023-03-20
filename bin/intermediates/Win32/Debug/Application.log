@@ -1,2 +1,4 @@
-﻿  Camera.cpp
+﻿  Application.cpp
+C:\dev\GALINT\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\dev\GALINT\Application\src\Application.cpp(218,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Application.vcxproj -> C:\dev\GALINT\bin\Win32\Debug\Application.exe
