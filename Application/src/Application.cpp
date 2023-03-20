@@ -14,9 +14,13 @@
 //#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 //#include <glm/ext/scalar_constants.hpp> // glm::pi
 
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
 #include "GL_Debug.h";
 #include "Camera.h"
 #include "UserInputs.h"
+#include "Texture.h"
 
 static std::string ParseShader(const std::string& filepath)
 {
@@ -126,91 +130,79 @@ int main(void)
 
     float positions[] = {
         //front face
-        -0.5f, -0.5f, 0.0f, //0
-         0.5f, -0.5f, 0.0f, //1
-         0.5f,  0.5f, 0.0f, //2
-        -0.5f,  0.5f, 0.0f, //3
+        -0.5f, -0.5f, 0.0f, 1.0f, //0
+         0.5f, -0.5f, 1.0f, 0.0f, //1
+         0.5f,  0.5f, 1.0f, 1.0f, //2
+        -0.5f,  0.5f, 0.0f, 1.0f  //3
 
-        //back face
-        -0.5f, -0.5f, -0.5f, //4
-         0.5f, -0.5f, -0.5f, //5
-         0.5f,  0.5f, -0.5f, //6
-        -0.5f,  0.5f, -0.5f, //7
     };
 
     unsigned int indices[] = {
         //front face
         0, 1, 2,
-        2, 3, 0,
-        
-		// right face
-		1, 5, 6,
-		6, 2, 1,
-		// back face
-		7, 6, 5,
-		5, 4, 7,
-		// left face
-		4, 0, 3,
-		3, 7, 4,
-		// bottom face
-		4, 5, 1,
-		1, 0, 4,
-		// top face
-		3, 2, 6,
-		6, 7, 3
+        2, 3, 0
+
     };
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+	glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), positions, GL_STATIC_DRAW);
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+    
+    VertexBufferLayout layout;
+    layout.Push<float>(2, GL_FALSE);
+	layout.Push<float>(2, GL_FALSE);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+    VertexArray va;
+    va.AddBuffer(vb, layout);
+    va.Bind();
 
-    unsigned int ibo;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    IndexBuffer ib(indices, 6);
+    ib.Bind();
 
+    //Shader Code
     std::string vertexShader = ParseShader("res/shaders/vertexShader.shader");
     std::string fragmentShader = ParseShader("res/shaders/fragmentShader.shader");
-
     unsigned int shader = CreateShader(vertexShader, fragmentShader);
     glLinkProgram(shader);
     glUseProgram(shader);
 
     Camera* cam = new Camera();
-
     glfwSetWindowUserPointer(window, cam);
 
     glfwSetKeyCallback(window, keyCallback);
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glEnable(GL_DEPTH_TEST);
+    Texture texture("res/textures/TheChernoLogo.png");
+    texture.Bind();
+	int texLocation = glGetUniformLocation(shader, "u_Texture");
+    if (texLocation == -1)
+    {
+        printf("Warning: uniform texLocation doesn't exist!\n");
+    }
+    printf("TexLocation: %d\n", texLocation);
+    glUniform1i(texLocation, 0);
+
+    //glEnable(GL_DEPTH_TEST);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
+        /*Render here */
         //glClearColor(250.0f / 255.0f, 119.0f / 255.0f, 110.0f / 255.0f, 1.0f);
-        
-		glm::mat4 pvm = cam->ReturnPVM();
+
+		/*glm::mat4 pvm = cam->ReturnPVM();
 
 		int location = glGetUniformLocation(shader, "u_PVM");
-		assert(location != -1);
-		glUniformMatrix4fv(location, 1, GL_FALSE, &pvm[0][0]);
+        assert(location == -1);
+		glUniformMatrix4fv(location, 1, GL_FALSE, &pvm[0][0]);*/
 
         //glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

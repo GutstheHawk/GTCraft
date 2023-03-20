@@ -30,7 +30,7 @@ glDebugOutput(
 	switch (type)
 	{
 	case GL_DEBUG_TYPE_ERROR:					printf("Error\n"); break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:		printf("Depricated Behavior\n"); break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:		printf("Deprecated Behavior\n"); break;
 	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:		printf("Undefined Behavior\n"); break;
 	case GL_DEBUG_TYPE_PORTABILITY:				printf("Portability\n"); break;
 	case GL_DEBUG_TYPE_PERFORMANCE:				printf("Performance\n"); break;
@@ -43,9 +43,9 @@ glDebugOutput(
 	printf("Severity: ");
 	switch (severity)
 	{
-	case GL_DEBUG_SEVERITY_HIGH:			printf("High\n"); break;
-	case GL_DEBUG_SEVERITY_MEDIUM:			printf("Medium\n"); break;
-	case GL_DEBUG_SEVERITY_LOW:				printf("Low\n"); break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION:	printf("Notification\n"); break;
+	case GL_DEBUG_SEVERITY_HIGH:			printf("High\n\n"); break;
+	case GL_DEBUG_SEVERITY_MEDIUM:			printf("Medium\n\n"); break;
+	case GL_DEBUG_SEVERITY_LOW:				printf("Low\n\n"); break;
+	case GL_DEBUG_SEVERITY_NOTIFICATION:	printf("Notification\n\n"); break;
 	}
 }
