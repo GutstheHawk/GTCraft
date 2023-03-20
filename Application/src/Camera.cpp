@@ -22,6 +22,11 @@ void Camera::Rotate(glm::vec2 const& Rotate)
 	Model = glm::rotate(Model, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
+void Camera::ModelTransform(glm::vec3 translationVector)
+{
+	Model = glm::translate(Model, translationVector);
+}
+
 void Camera::SetCameraSpeed(float deltaTime)
 {
 	cameraSpeed = 5 * deltaTime;
@@ -42,31 +47,26 @@ void Camera::MoveForward()
 void Camera::MoveBackward()
 {
 	cameraPos -= cameraSpeed * cameraFront;
-	UpdateView();
 }
 
 void Camera::StrafeLeft()
 {
 	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	UpdateView();
 }
 
 void Camera::StrafeRight()
 {
 	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	UpdateView();
 }
 
 void Camera::MoveUpward()
 {
 	cameraPos += cameraSpeed * cameraUp;
-	UpdateView();
 }
 
 void Camera::MoveDownward()
 {
 	cameraPos += cameraSpeed * glm::vec3(0.0f, -1.0f, 0.0f);
-	UpdateView();
 }
 
 

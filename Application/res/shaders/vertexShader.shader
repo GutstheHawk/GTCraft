@@ -13,5 +13,4 @@ void main() {
 
     gl_Position = projection * view * model * position;
     v_TexCoord = texCoord;
-    //u_PVM *
 }

@@ -1372,4 +1372,18 @@
   <ItemGroup>
     <Text Include="Notes.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Users\tsirl\Downloads\dirt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\dirt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\dirtfront.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\TheChernoLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

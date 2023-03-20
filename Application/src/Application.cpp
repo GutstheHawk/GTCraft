@@ -129,35 +129,75 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	float positions[] = {
-		//front face
-		-0.5f, -0.5f, 0.0f, 0.0f, //0
-		 0.5f, -0.5f, 1.0f, 0.0f, //1
-		 0.5f,  0.5f, 1.0f, 1.0f, //2
-		-0.5f,  0.5f, 0.0f, 1.0f  //3
+		//front
+		-1.0, -1.0,  1.0, 0.0, 0.0,
+		 1.0, -1.0,  1.0, 1.0, 0.0,
+		 1.0,  1.0,  1.0, 1.0, 1.0,
+		-1.0,  1.0,  1.0, 0.0, 1.0,
+		//top
+		-1.0,  1.0,  1.0, 0.0, 0.0,
+		 1.0,  1.0,  1.0, 1.0, 0.0,
+		 1.0,  1.0, -1.0, 1.0, 1.0,
+		-1.0,  1.0, -1.0, 0.0, 1.0,
+		//back
+		 1.0, -1.0, -1.0, 0.0, 0.0,
+		-1.0, -1.0, -1.0, 1.0, 0.0,
+		-1.0,  1.0, -1.0, 1.0, 1.0,
+		 1.0,  1.0, -1.0, 0.0, 1.0,
+		//bottom
+		-1.0, -1.0, -1.0, 0.0, 0.0,
+		 1.0, -1.0, -1.0, 1.0, 0.0,
+		 1.0, -1.0,  1.0, 1.0, 1.0,
+		-1.0, -1.0,  1.0, 0.0, 1.0,
+		//left
+		-1.0, -1.0, -1.0, 0.0, 0.0,
+		-1.0, -1.0,  1.0, 1.0, 0.0,
+		-1.0,  1.0,  1.0, 1.0, 1.0,
+		-1.0,  1.0, -1.0, 0.0, 1.0,
+		//right
+		 1.0, -1.0,  1.0, 0.0, 0.0,
+		 1.0, -1.0, -1.0, 1.0, 0.0,
+		 1.0,  1.0, -1.0, 1.0, 1.0,
+		 1.0,  1.0,  1.0, 0.0, 1.0
 
 	};
 
 	unsigned int indices[] = {
-		//front face
-		0, 1, 2,
-		2, 3, 0
+		//front
+		0,  1,  2,
+		2,  3,  0,
+		//top
+		4,  5,  6,
+		6,  7,  4,
+		//back
+		8,  9,  10,
+		10, 11, 8,
+		//bottom
+		12, 13, 14,
+		14, 15, 12,
+		//left
+		16, 17, 18,
+		18, 19, 16,
+		//right
+		20, 21, 22,
+		22, 23, 20
 
 	};
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+	VertexBuffer vb(positions, 5 * 24 * sizeof(float));
 
 	VertexBufferLayout layout;
-	layout.Push<float>(2, GL_FALSE);
+	layout.Push<float>(3, GL_FALSE);
 	layout.Push<float>(2, GL_FALSE);
 
 	VertexArray va;
 	va.AddBuffer(vb, layout);
 	va.Bind();
 
-	IndexBuffer ib(indices, 6);
+	IndexBuffer ib(indices, 36);
 	ib.Bind();
 
 	//Shader Code
@@ -172,9 +212,10 @@ int main(void)
 	glfwSetWindowUserPointer(window, pc);
 
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetCursorPosCallback(window, mouseCallback);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	Texture texture("res/textures/dirtfront.png");
+	Texture texture("res/textures/dirt.png");
 	texture.Bind();
 	int texLocation = glGetUniformLocation(shader, "u_Texture");
 	if (texLocation == -1)
@@ -189,7 +230,10 @@ int main(void)
 	float currentFrame = 0.0f;
 	float lastFrame = 0.0f;
 
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
+
+	int size;  
+	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -222,7 +266,12 @@ int main(void)
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);
+
+		/*cam->ModelTransform(glm::vec3(1.0f, 0.0f, 2.0f));
+		model = cam->ReturnModel();
+		glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
+		glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);*/
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

@@ -18,7 +18,7 @@ public:
 	bool LEFT_PRESSED;
 	bool RIGHT_PRESSED;
 
-	float pitch = -90.0f;
+	float pitch = 0.0f;
 	float yaw = 0.0f;
 
 	float xpos = 0.0f;

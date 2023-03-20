@@ -625,6 +625,12 @@
   <ItemGroup>
     <Text Include="Notes.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Users\tsirl\Downloads\dirt.png" />
+    <Image Include="res\textures\dirt.png" />
+    <Image Include="res\textures\dirtfront.png" />
+    <Image Include="res\textures\TheChernoLogo.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />

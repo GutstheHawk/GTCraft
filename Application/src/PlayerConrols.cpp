@@ -67,4 +67,6 @@ void PlayerControls::ProcessInputs()
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
 	camera->SetCameraFront(glm::normalize(front));
+
+	camera->UpdateView();
 }
