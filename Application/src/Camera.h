@@ -13,6 +13,12 @@ private:
     glm::mat4 Projection;
     glm::mat4 View;
     glm::mat4 Model;
+
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    float cameraSpeed = 0.0f;
 public:
     Camera();
     ~Camera();
@@ -20,7 +26,22 @@ public:
     void ViewTranslate(float Translate);
     void Rotate(glm::vec2 const& Rotate);
 
-    glm::mat4 ReturnPVM();
+    void SetCameraSpeed(float deltaTime);
+
+    void MoveForward();
+    void MoveBackward();
+    void StrafeLeft();
+    void StrafeRight();
+    void MoveUpward();
+    void MoveDownward();
+
+    void UpdateView();
+
+	glm::mat4 ReturnProjection();
+	glm::mat4 ReturnView();
+	glm::mat4 ReturnModel();
+	glm::mat4 ReturnPVM();
+
 };
 
 //glm::mat4 camera(float Translate, glm::vec2 const& Rotate)

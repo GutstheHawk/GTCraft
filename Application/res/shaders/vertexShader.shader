@@ -3,13 +3,15 @@
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec2 texCoord;
 
-//uniform mat4 u_PVM;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 out vec2 v_TexCoord;
 
 void main() {
 
-    gl_Position = position;
+    gl_Position = projection * view * model * position;
     v_TexCoord = texCoord;
     //u_PVM *
 }

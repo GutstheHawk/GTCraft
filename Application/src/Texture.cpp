@@ -30,6 +30,10 @@ Texture::Texture(const std::string& path)
 		__debugbreak();
 	}
 
+	/*if (m_LocalBuffer)
+	{
+		stbi_image_free(m_LocalBuffer);
+	}*/
 }
 
 Texture::~Texture()
