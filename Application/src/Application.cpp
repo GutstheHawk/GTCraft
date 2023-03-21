@@ -281,6 +281,9 @@ int main(void)
 			}
 		}
 
+		//Resets Model matrix to world origin - Identity Matrix
+		cam->ResetModel();
+
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
