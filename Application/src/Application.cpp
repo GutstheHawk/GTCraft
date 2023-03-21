@@ -259,19 +259,27 @@ int main(void)
 		glUniformMatrix4fv(location, 1, GL_FALSE, &view[0][0]);
 
 		location = glGetUniformLocation(shader, "model");
-		glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
+		//glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
 
 		//glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);
 
-		/*cam->ModelTransform(glm::vec3(1.0f, 0.0f, 2.0f));
-		model = cam->ReturnModel();
-		glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
-		glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);*/
+		for (unsigned int y = 0; y < 5; y++)
+		{
+			for (unsigned int z = 0; z < 16; z++)
+			{
+				for (unsigned int x = 0; x < 16; x++)
+				{
+					cam->ModelTransform(glm::vec3(x * 2.0f, y * 2.0f, z * 2.0f));
+					model = cam->ReturnModel();
+					glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
+					glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);
+				}
+			}
+		}
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
