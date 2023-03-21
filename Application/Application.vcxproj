@@ -629,6 +629,8 @@
     <Image Include="..\..\..\Users\tsirl\Downloads\dirt.png" />
     <Image Include="res\textures\dirt.png" />
     <Image Include="res\textures\dirtfront.png" />
+    <Image Include="res\textures\skybox.jpg" />
+    <Image Include="res\textures\texture_atlas.jpg" />
     <Image Include="res\textures\TheChernoLogo.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
