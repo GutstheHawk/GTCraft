@@ -42,7 +42,7 @@
     <ClCompile Include="src\VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\PlayerConrols.cpp">
+    <ClCompile Include="src\PlayerControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1383,6 +1383,30 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\textures\TheChernoLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\texture_atlas.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_bottom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_front.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\skybox\skybox_top.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -215,7 +215,8 @@ int main(void)
 	glfwSetCursorPosCallback(window, mouseCallback);
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	Texture texture("res/textures/dirt.png");
+	//Texture texture("res/textures/dirt.png");
+	Texture texture("res/textures/texture_atlas.jpg", 15, 15, 15, 15);
 	texture.Bind();
 	int texLocation = glGetUniformLocation(shader, "u_Texture");
 	if (texLocation == -1)
@@ -224,6 +225,12 @@ int main(void)
 	}
 	printf("TexLocation: %d\n", texLocation);
 	glUniform1i(texLocation, 0);
+
+	int atlasOffsetSize = glGetUniformLocation(shader, "v_atlasOffsetSize");
+	glUniform2f(atlasOffsetSize, 16.0f, 16.0f);
+
+	int atlasIndexes = glGetUniformLocation(shader, "v_atlasIndexes");
+	glUniform2f(atlasIndexes, 2.0f, 15.0f);
 
 	//Time
 	float deltaTime = 0.0f;
@@ -271,8 +278,21 @@ int main(void)
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-		for (unsigned int y = 0; y < 5; y++)
+		for (unsigned int y = 0; y < 16; y++)
 		{
+			if (y > 14)
+			{
+				glUniform2f(atlasIndexes, 0.0f, 15.0f);
+			}
+			else if (y < 3)
+			{
+				glUniform2f(atlasIndexes, 1.0f, 14.0f);
+
+			}
+			else
+			{
+				glUniform2f(atlasIndexes, 2.0f, 15.0f);
+			}
 			for (unsigned int z = 0; z < 16; z++)
 			{
 				for (unsigned int x = 0; x < 16; x++)

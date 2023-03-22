@@ -85,4 +85,4 @@
 -in "C:\Program Files (x86)\Windows Kits\10\References\10.0.22000.0\Windows.UI.WebUI.Core.WebUICommandBarContract\1.0.0.0\Windows.UI.WebUI.Core.WebUICommandBarContract.winmd"
 -in "C:\Program Files (x86)\Windows Kits\10\References\10.0.22000.0\Windows.UI.Xaml.Core.Direct.XamlDirectContract\5.0.0.0\Windows.UI.Xaml.Core.Direct.XamlDirectContract.winmd"
 -in "C:\Program Files (x86)\Windows Kits\10\References\10.0.22000.0\Windows.UI.Xaml.Hosting.HostingContract\5.0.0.0\Windows.UI.Xaml.Hosting.HostingContract.winmd"
--in "C:\Program Files (x86)\Windows Kits\10\References\10.0.22000.0\Windows.Web.Http.Diagnostics.HttpDiagnosticsContract\2.0.0.0\Windows.Web.Http.Diagnostics.HttpDiagnosticsContract.winmd" -out "C:\dev\GALINT\bin\intermediates\Win32\Debug\Generated Files\."
+-in "C:\Program Files (x86)\Windows Kits\10\References\10.0.22000.0\Windows.Web.Http.Diagnostics.HttpDiagnosticsContract\2.0.0.0\Windows.Web.Http.Diagnostics.HttpDiagnosticsContract.winmd" -out "C:\dev\GALINT-MC-Clone\bin\intermediates\Win32\Debug\Generated Files\."

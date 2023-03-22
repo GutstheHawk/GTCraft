@@ -630,6 +630,12 @@
     <Image Include="res\textures\dirt.png" />
     <Image Include="res\textures\dirtfront.png" />
     <Image Include="res\textures\skybox.jpg" />
+    <Image Include="res\textures\skybox\skybox_back.png" />
+    <Image Include="res\textures\skybox\skybox_bottom.png" />
+    <Image Include="res\textures\skybox\skybox_front.png" />
+    <Image Include="res\textures\skybox\skybox_left.png" />
+    <Image Include="res\textures\skybox\skybox_right.png" />
+    <Image Include="res\textures\skybox\skybox_top.png" />
     <Image Include="res\textures\texture_atlas.jpg" />
     <Image Include="res\textures\TheChernoLogo.png" />
   </ItemGroup>
