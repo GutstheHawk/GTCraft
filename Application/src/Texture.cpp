@@ -2,6 +2,12 @@
 
 #include "stb_image/stb_image.h"
 
+Texture::Texture(int renderID)
+	: m_RendererID(renderID), m_FilePath(""), m_LocalBuffer(nullptr),
+	m_Width(0), m_Height(0), m_BPP(0)
+{
+}
+
 Texture::Texture(const std::string& path)
 	: m_RendererID(0), m_FilePath(path), m_LocalBuffer(nullptr),
 	m_Width(0), m_Height(0), m_BPP(0)
@@ -77,13 +83,42 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_RendererID);
 }
 
-void Texture::Bind(unsigned int slot) const
+void Texture::Bind(unsigned int type, unsigned int slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D, m_RendererID);
+	glBindTexture(type, m_RendererID);
 }
 
-void Texture::Unbind() const
+void Texture::Unbind(unsigned int type) const
 {
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(type, 0);
+}
+
+void Texture::loadCubemap(std::vector<std::string> faces)
+{
+	glGenTextures(1, &m_RendererID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &m_Width, &m_Height, &m_BPP, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+			);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+			stbi_image_free(data);
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
 }

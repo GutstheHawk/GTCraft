@@ -478,9 +478,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="res\shaders\fragmentShader.shader" />
+    <None Include="res\shaders\atlasFragmentShader.shader" />
     <None Include="res\shaders\fragmentShaderBasic.shader" />
-    <None Include="res\shaders\vertexShader.shader" />
+    <None Include="res\shaders\atlasVertexShader.shader" />
+    <None Include="res\shaders\skyboxFragmentShader.shader" />
+    <None Include="res\shaders\skyboxVertexShader.shader" />
     <None Include="res\shaders\VertexShaderBasic.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
@@ -627,6 +629,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Users\tsirl\Downloads\dirt.png" />
+    <Image Include="res\textures\alternate_atlas.png" />
     <Image Include="res\textures\dirt.png" />
     <Image Include="res\textures\dirtfront.png" />
     <Image Include="res\textures\skybox.jpg" />

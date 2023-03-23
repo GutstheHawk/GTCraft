@@ -130,10 +130,10 @@ int main(void)
 
 	float positions[] = {
 		//front
-		-1.0, -1.0,  1.0, 0.0, 0.0, //0
-		 1.0, -1.0,  1.0, 1.0, 0.0, //1
-		 1.0,  1.0,  1.0, 1.0, 1.0, //2
-		-1.0,  1.0,  1.0, 0.0, 1.0, //3
+		-1.0, -1.0,  1.0, 0.0, 0.0, //0 bottom-left
+		 1.0, -1.0,  1.0, 1.0, 0.0, //1 bottom-right
+		 1.0,  1.0,  1.0, 1.0, 1.0, //2 top-right
+		-1.0,  1.0,  1.0, 0.0, 1.0, //3 top-left
 		//top
 		-1.0,  1.0,  1.0, 0.0, 0.0, //4
 		 1.0,  1.0,  1.0, 1.0, 0.0, //5
@@ -164,8 +164,8 @@ int main(void)
 
 	unsigned int indices[] = {
 		//front
-		0,  1,  2,
-		2,  3,  0,
+		1,  2,  3,
+		3,  0,  1,
 		//top
 		4,  5,  6,
 		6,  7,  4,
@@ -184,29 +184,93 @@ int main(void)
 
 	};
 
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	VertexBuffer vb(positions, 5 * 24 * sizeof(float));
+	////Skybox vertex buffer, vertex array, and index buffer
+	VertexBuffer skyboxVB(positions, 3 * 36 * sizeof(float));
 
-	VertexBufferLayout layout;
-	layout.Push<float>(3, GL_FALSE);
-	layout.Push<float>(2, GL_FALSE);
+	VertexBufferLayout skyboxLayout;
+	skyboxLayout.Push<float>(3, GL_FALSE);
 
-	VertexArray va;
-	va.AddBuffer(vb, layout);
-	va.Bind();
+	VertexArray skyboxVA;
+	skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
+	skyboxVA.Bind();
+
+	//Atlas vertex buffer, vertex array, and index buffer
+	VertexBuffer atlasVB(positions, 5 * 24 * sizeof(float));
+
+	VertexBufferLayout atlasLayout;
+	atlasLayout.Push<float>(3, GL_FALSE);
+	atlasLayout.Push<float>(2, GL_FALSE);
+
+	VertexArray atlasVA;
+	atlasVA.AddBuffer(atlasVB, atlasLayout);
 
 	IndexBuffer ib(indices, 36);
 	ib.Bind();
 
-	//Shader Code
-	std::string vertexShader = ParseShader("res/shaders/vertexShader.shader");
-	std::string fragmentShader = ParseShader("res/shaders/fragmentShader.shader");
-	unsigned int shader = CreateShader(vertexShader, fragmentShader);
-	glLinkProgram(shader);
-	glUseProgram(shader);
 
+	//Atlas Shader Code
+	std::string atlasVertexShader = ParseShader("res/shaders/atlasVertexShader.shader");
+	std::string atlasFragmentShader = ParseShader("res/shaders/atlasFragmentShader.shader");
+	unsigned int atlasShader = CreateShader(atlasVertexShader, atlasFragmentShader);
+	glLinkProgram(atlasShader);
+	glUseProgram(atlasShader);
+
+	//Atlas Shader Code
+	std::string skyboxVertexShader = ParseShader("res/shaders/skyboxVertexShader.shader");
+	std::string skyboxFragmentShader = ParseShader("res/shaders/skyboxFragmentShader.shader");
+	unsigned int skyboxShader = CreateShader(skyboxVertexShader, skyboxFragmentShader);
+	glLinkProgram(skyboxShader);
+
+
+	//Setup camera and player controls
 	Camera* cam = new Camera();
 	PlayerControls* pc = new PlayerControls(cam);
 	glfwSetWindowUserPointer(window, pc);
@@ -216,9 +280,9 @@ int main(void)
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Texture texture("res/textures/dirt.png");
-	Texture texture("res/textures/texture_atlas.jpg", 15, 15, 15, 15);
-	texture.Bind();
-	int texLocation = glGetUniformLocation(shader, "u_Texture");
+	Texture texture("res/textures/alternate_atlas.png", 15, 15, 15, 15);
+	texture.Bind(GL_TEXTURE_2D);
+	int texLocation = glGetUniformLocation(atlasShader, "u_Texture");
 	if (texLocation == -1)
 	{
 		printf("Warning: uniform texLocation doesn't exist!\n");
@@ -226,11 +290,24 @@ int main(void)
 	printf("TexLocation: %d\n", texLocation);
 	glUniform1i(texLocation, 0);
 
-	int atlasOffsetSize = glGetUniformLocation(shader, "v_atlasOffsetSize");
+	int atlasOffsetSize = glGetUniformLocation(atlasShader, "v_atlasOffsetSize");
 	glUniform2f(atlasOffsetSize, 16.0f, 16.0f);
-
-	int atlasIndexes = glGetUniformLocation(shader, "v_atlasIndexes");
+	int atlasIndexes = glGetUniformLocation(atlasShader, "v_atlasIndexes");
 	glUniform2f(atlasIndexes, 2.0f, 15.0f);
+
+	//Skybox
+	std::vector<std::string> faces
+	{
+			"res/textures/skybox/skybox_right.png",
+			"res/textures/skybox/skybox_left.png",
+			"res/textures/skybox/skybox_top.png",
+			"res/textures/skybox/skybox_bottom.png",
+			"res/textures/skybox/skybox_front.png",
+			"res/textures/skybox/skybox_back.png"
+	};
+
+	Texture skyboxTexture(0);
+	skyboxTexture.loadCubemap(faces);
 
 	//Time
 	float deltaTime = 0.0f;
@@ -238,6 +315,7 @@ int main(void)
 	float lastFrame = 0.0f;
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	int size;  
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
@@ -259,25 +337,42 @@ int main(void)
 
 		pc->ProcessInputs();
 
+		//glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 		glm::mat4 projection = cam->ReturnProjection();
 		glm::mat4 view = cam->ReturnView();
 		glm::mat4 model = cam->ReturnModel();
 
-		int location = glGetUniformLocation(shader, "projection");
+		glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
+		glUseProgram(skyboxShader);
+		glm::mat4 sbView = glm::mat4(glm::mat3(cam->ReturnUpdatedView())); // remove translation from the view matrix
+		int location = glGetUniformLocation(skyboxShader, "projection");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
+		location = glGetUniformLocation(skyboxShader, "view");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &sbView[0][0]);
+		// skybox cube
+		skyboxVA.Bind();
+		skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		skyboxVA.Unbind();
+		glDepthMask(GL_TRUE);; // set depth function back to default
+
+		glUseProgram(atlasShader);
+
+		location = glGetUniformLocation(atlasShader, "projection");
 		glUniformMatrix4fv(location, 1, GL_FALSE, &projection[0][0]);
 
-		location = glGetUniformLocation(shader, "view");
+		location = glGetUniformLocation(atlasShader, "view");
 		glUniformMatrix4fv(location, 1, GL_FALSE, &view[0][0]);
 
-		location = glGetUniformLocation(shader, "model");
+		location = glGetUniformLocation(atlasShader, "model");
 		//glUniformMatrix4fv(location, 1, GL_FALSE, &model[0][0]);
 
-		//glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
+		atlasVA.Bind();
 		for (unsigned int y = 0; y < 16; y++)
 		{
 			if (y > 14)
@@ -286,7 +381,7 @@ int main(void)
 			}
 			else if (y < 3)
 			{
-				glUniform2f(atlasIndexes, 1.0f, 14.0f);
+				glUniform2f(atlasIndexes, 1.0f, 15.0f);
 
 			}
 			else
@@ -304,18 +399,20 @@ int main(void)
 				}
 			}
 		}
-
+		atlasVA.Unbind();
 		//Resets Model matrix to world origin - Identity Matrix
-		cam->ResetModel();
+		//cam->ResetModel();
+
+
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
-
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
 
-	glDeleteProgram(shader);
+	glDeleteProgram(atlasShader);
+	glDeleteProgram(skyboxShader);
 
 	glfwTerminate();
 	return 0;
