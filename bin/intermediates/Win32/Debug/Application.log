@@ -1,9 +1,10 @@
 ﻿  Application.cpp
-C:\dev\GALINT\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\dev\GALINT\Application\src\UserInputs.h(100,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\Application.cpp(333,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(100,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(269,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\ChunkGeneration.h(45): warning C4172: returning address of local variable or temporary: chunk
 glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Application.vcxproj -> C:\dev\GALINT\bin\Win32\Debug\Application.exe
+  Application.vcxproj -> C:\dev\GALINT-MC-Clone\bin\Win32\Debug\Application.exe
