@@ -953,6 +953,9 @@
     <ClInclude Include="src\ChunkGeneration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Superchunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">
@@ -1379,6 +1382,8 @@
     <None Include="res\shaders\atlasVertexShader.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
     <None Include="res\shaders\skyboxVertexShader.shader" />
+    <None Include="res\shaders\chunkVertexShader.shader" />
+    <None Include="res\shaders\chunkFragmentShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

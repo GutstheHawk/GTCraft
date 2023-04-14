@@ -80,3 +80,68 @@ float positions[] = {
 		2, 3, 0
 
 	};
+
+
+
+//Outdated Chunk Stuff
+
+	//static Block* generateChunk()
+//{
+//	Block chunk[4096];
+//
+//	unsigned char localBID = 0;
+//	int index = 0;
+//
+//	for (unsigned int y = 0; y < 16; y++)
+//	{
+//		//if (y > 14)
+//		//{
+//
+//		//}
+//		//else if (y < 3)
+//		//{
+//
+//		//}
+//		//else
+//		//{
+//
+//		//}
+//		for (unsigned int z = 0; z < 16; z++)
+//		{
+//			for (unsigned int x = 0; x < 16; x++)
+//			{
+//				index = (y * 256) + (z * 16) + x;
+//				//std::cout << index << "\n";
+//				chunk[index].BlockID = localBID;
+//				chunk[index].ZX = (z * 16) + x;
+//				chunk[index].Y = y;
+//			}
+//		}
+//	}
+//
+//	return chunk;
+//}
+
+//static void printChunk(Block* chunk)
+//{
+//	int index = 0;
+//
+//	for (unsigned int y = 0; y < 16; y++)
+//	{
+//		for (unsigned int z = 0; z < 16; z++)
+//		{
+//			for (unsigned int x = 0; x < 16; x++)
+//			{
+//				index = (y * 256) + (z * 16) + x;
+//				std::cout << "Index: " << index << "  Block ID: " << static_cast<int>(chunk[index].BlockID)
+//					<< "  Z and X:  " << static_cast<int>(chunk[index].ZX)
+//					<< "  Y:  " << chunk[index].Y << "\n";
+//			}
+//		}
+//	}
+//
+//	//for (int i = 0; i < 4095; i++)
+//	//{
+//	//	std::cout << "Block ID: " << static_cast<int>(chunk[i].BlockID) << " X and Z: " << static_cast<int>(chunk[i].XandZ) << " Y: " << chunk[i].Y << "\n";
+//	//}
+//}

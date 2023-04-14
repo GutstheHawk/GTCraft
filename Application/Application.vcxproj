@@ -184,6 +184,7 @@
     <ClInclude Include="src\PlayerControls.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Superchunk.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\UserInputs.h" />
     <ClInclude Include="src\UserInputsRotateObject.h" />
@@ -482,6 +483,8 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\shaders\atlasFragmentShader.shader" />
+    <None Include="res\shaders\chunkFragmentShader.shader" />
+    <None Include="res\shaders\chunkVertexShader.shader" />
     <None Include="res\shaders\fragmentShaderBasic.shader" />
     <None Include="res\shaders\atlasVertexShader.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
