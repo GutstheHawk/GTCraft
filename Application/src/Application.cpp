@@ -25,12 +25,6 @@
 #include "ChunkGeneration.h"
 #include "Superchunk.h"
 
-struct Vertex
-{
-	float position[3];
-	float TexCoords[2];
-};
-
 //static std::array<Vertex, 24> CreateCube(float x, float y, float z)
 //{
 //	Vertex v0;
