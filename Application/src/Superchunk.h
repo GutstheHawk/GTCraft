@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 1
+#define SCX 8
 #define SCY 1
-#define SCZ 1
+#define SCZ 8
 
 typedef glm::tvec4<GLbyte> byte4;
 

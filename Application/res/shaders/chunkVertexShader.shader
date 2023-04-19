@@ -13,6 +13,16 @@ void main()
     float halfPixelOffset = (0.5 / textureRes);*/
 
     //texIndex = coord.w;
+    float texIndex = coord.w;
+
+    vec2 texIndexes;
+
+    texIndexes.x = floor(texIndex / 16);
+    texIndexes.y = texIndex % 16;
+
+
+    vec2 altasOffset = vec2(16.0, 16.0);
+
 
     v_TexCoord = coord;
 
