@@ -1,6 +1,6 @@
 #pragma once
 #define CX 16
-#define CY 16
+#define CY 24
 #define CZ 16
 #define SEED 1999.0f
 
@@ -79,7 +79,7 @@ struct Chunk
 						continue;
 
 					// View from negative x
-					if ((x - 1) < 0)
+					if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
 					{
 						vertex[i++] = byte4(x, y,     z,	 type);
 						vertex[i++] = byte4(x, y,     z + 1, type);
@@ -88,21 +88,9 @@ struct Chunk
 						vertex[i++] = byte4(x, y,     z + 1, type);
 						vertex[i++] = byte4(x, y + 1, z + 1, type);
 					}
-					else
-					{
-						if (!blocks[x - 1][y][z])
-						{
-							vertex[i++] = byte4(x, y,	  z,	 type);
-							vertex[i++] = byte4(x, y,	  z + 1, type);
-							vertex[i++] = byte4(x, y + 1, z,	 type);
-							vertex[i++] = byte4(x, y + 1, z,	 type);
-							vertex[i++] = byte4(x, y,	  z + 1, type);
-							vertex[i++] = byte4(x, y + 1, z + 1, type);
-						}
-					}
 
 					// View from positive x
-					if ((x + 1) == CX)
+					if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
 					{
 						vertex[i++] = byte4(x + 1, y,     z,     type);
 						vertex[i++] = byte4(x + 1, y + 1, z,     type);
@@ -111,21 +99,9 @@ struct Chunk
 						vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
 						vertex[i++] = byte4(x + 1, y,     z + 1, type);
 					}
-					else
-					{
-						if (!blocks[x + 1][y][z])
-						{
-							vertex[i++] = byte4(x + 1, y,     z,     type);
-							vertex[i++] = byte4(x + 1, y + 1, z,     type);
-							vertex[i++] = byte4(x + 1, y,     z + 1, type);
-							vertex[i++] = byte4(x + 1, y + 1, z,     type);
-							vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
-							vertex[i++] = byte4(x + 1, y,     z + 1, type);
-						}
-					}
 
 					// View from negative y
-					if ((y - 1) < 0)
+					if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
 					{
 						vertex[i++] = byte4(x,     y, z,     type);
 						vertex[i++] = byte4(x + 1, y, z,     type);
@@ -134,21 +110,9 @@ struct Chunk
 						vertex[i++] = byte4(x + 1, y, z + 1, type);
 						vertex[i++] = byte4(x,     y, z + 1, type);
 					}
-					else
-					{
-						if (!blocks[x][y - 1][z])
-						{
-							vertex[i++] = byte4(x,	   y, z,	 type);
-							vertex[i++] = byte4(x + 1, y, z,	 type);
-							vertex[i++] = byte4(x,	   y, z + 1, type);
-							vertex[i++] = byte4(x + 1, y, z,	 type);
-							vertex[i++] = byte4(x + 1, y, z + 1, type);
-							vertex[i++] = byte4(x,     y, z + 1, type);
-						}
-					}
 
 					// View from positive y
-					if ((y + 1) == CY)
+					if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
 					{
 						vertex[i++] = byte4(x,     y + 1, z,	 type);
 						vertex[i++] = byte4(x,	   y + 1, z + 1, type);
@@ -157,21 +121,9 @@ struct Chunk
 						vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
 						vertex[i++] = byte4(x + 1, y + 1, z,	 type);
 					}
-					else
-					{
-						if (!blocks[x][y + 1][z])
-						{
-							vertex[i++] = byte4(x,     y + 1, z,     type);
-							vertex[i++] = byte4(x,     y + 1, z + 1, type);
-							vertex[i++] = byte4(x + 1, y + 1, z,     type);
-							vertex[i++] = byte4(x,     y + 1, z + 1, type);
-							vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
-							vertex[i++] = byte4(x + 1, y + 1, z,     type);
-						}
-					}
 
 					// View from negative z
-					if ((z - 1) < 0)
+					if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
 					{
 						vertex[i++] = byte4(x,     y,	  z, type);
 						vertex[i++] = byte4(x,     y + 1, z, type);
@@ -180,22 +132,10 @@ struct Chunk
 						vertex[i++] = byte4(x + 1, y + 1, z, type);
 						vertex[i++] = byte4(x + 1, y,	  z, type);
 					}
-					else
-					{
-						if (!blocks[x][y][z - 1])
-						{
-							vertex[i++] = byte4(x,     y,     z, type);
-							vertex[i++] = byte4(x,     y + 1, z, type);
-							vertex[i++] = byte4(x + 1, y,     z, type);
-							vertex[i++] = byte4(x,     y + 1, z, type);
-							vertex[i++] = byte4(x + 1, y + 1, z, type);
-							vertex[i++] = byte4(x + 1, y,     z, type);
-						}
-					}
 
 
 					// View from positive z
-					if ((z + 1) == CZ)
+					if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
 					{
 						vertex[i++] = byte4(x,     y,     z + 1, type);
 						vertex[i++] = byte4(x + 1, y,     z + 1, type);
@@ -203,18 +143,6 @@ struct Chunk
 						vertex[i++] = byte4(x,     y + 1, z + 1, type);
 						vertex[i++] = byte4(x + 1, y,     z + 1, type);
 						vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
-					}
-					else
-					{
-						if (!blocks[x][y][z + 1])
-						{
-							vertex[i++] = byte4(x,     y,     z + 1, type);
-							vertex[i++] = byte4(x + 1, y,     z + 1, type);
-							vertex[i++] = byte4(x,     y + 1, z + 1, type);
-							vertex[i++] = byte4(x,     y + 1, z + 1, type);
-							vertex[i++] = byte4(x + 1, y,     z + 1, type);
-							vertex[i++] = byte4(x + 1, y + 1, z + 1, type);
-						}
 					}
 				}
 			}
