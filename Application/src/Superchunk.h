@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 2
-#define SCY 3
-#define SCZ 2
+#define SCX 1
+#define SCY 2
+#define SCZ 1
 
 typedef glm::tvec4<GLbyte> byte4;
 
@@ -37,9 +37,9 @@ struct Superchunk
         }
 
         fillSuperchunk();
-        generateSuperchunkHeightmap(42.0f);
-        setChunkHeightMaps();
-        applyHeightmaps();
+        //generateSuperchunkHeightmap(42.0f);
+        //setChunkHeightMaps();
+        //applyHeightmaps();
         //generateHightmap();
         //applyHightmap();
 	}
@@ -281,7 +281,7 @@ struct Superchunk
         for (int x = 0; x < SCX; x++)
            for (int z = 0; z < SCZ; z++)
            {
-               sChunk[x][1][z]->getHeightmap(heightmap);
+               sChunk[x][SCY -1][z]->getHeightmap(heightmap);
            }
     }
 
@@ -290,7 +290,7 @@ struct Superchunk
         for (int x = 0; x < SCX; x++)
             for (int z = 0; z < SCZ; z++)
             {
-                sChunk[x][1][z]->applyHeightmap();
+                sChunk[x][SCY - 1][z]->applyHeightmap();
             }
     }
 };

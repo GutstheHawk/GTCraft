@@ -31,8 +31,8 @@ struct Chunk
 	Vertex* vertexes;
 	int elements;
 	bool changed;
-	int worldPosX = 0;
-	int worldPosZ = 0;
+	int worldPosX;
+	int worldPosZ;
 	//VertexBuffer* chunkVertexBuffer;
 	//VertexBufferLayout* chunkBufferLayout;
 	//VertexArray* chunkVertexArray;
@@ -58,6 +58,8 @@ struct Chunk
 		//memset(blocks, 0, sizeof(blocks));
 		elements = 0;
 		changed = true;
+		worldPosX = 0;
+		worldPosZ = 0;
 		glGenBuffers(1, &vbo);
 		glGenVertexArrays(1, &vao);
 		//genIndexBuffer();
@@ -585,7 +587,7 @@ struct Chunk
 		for (int x = 0; x < CX; x++)
 			for (int z = 0; z < CZ; z++)
 			{
-				heightmap[x][z] = sChunkHeightmap[x * worldPosX][z * worldPosZ];
+				heightmap[x][z] = sChunkHeightmap[(worldPosX * 16) + x][(worldPosZ * 16) + z];
 			}
 	}
 
