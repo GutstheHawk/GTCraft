@@ -102,6 +102,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,6 +125,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,6 +144,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,6 +167,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -487,6 +495,8 @@
     <None Include="res\shaders\chunkVertexShader.shader" />
     <None Include="res\shaders\fragmentShaderBasic.shader" />
     <None Include="res\shaders\atlasVertexShader.shader" />
+    <None Include="res\shaders\RayFragment.shader" />
+    <None Include="res\shaders\RayVertex.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
     <None Include="res\shaders\skyboxVertexShader.shader" />
     <None Include="res\shaders\VertexShaderBasic.shader" />

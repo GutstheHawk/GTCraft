@@ -1,11 +1,36 @@
 #pragma once
 
+#include <GL/glew.h>
+
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <glm/gtx/intersect.hpp>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include "Shader.h"
+
+static std::pair<glm::vec3, glm::vec3> TwoVec3s(glm::vec3 vecn1, glm::vec3 vecn2)
+{
+    return std::make_pair(vecn1, vecn2);
+}
+
+
+static std::string to_string(const glm::vec3& v)
+{
+    return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+}
+
+static std::string to_string(const glm::ivec3& v)
+{
+    return "(" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " + std::to_string(v.z) + ")";
+}
 
 class Camera
 {
@@ -24,9 +49,19 @@ private:
     float yaw = -90.0f;
     float pitch = 0.0f;
     float cameraSpeed = 0.0f;
+
+    Shader* rayShader;
+    Shader* worldShader;
 public:
     Camera();
     ~Camera();
+
+    std::pair<glm::vec3, glm::vec3> CastRay(float length);
+    void RenderRay(glm::vec3 startPos, glm::vec3 endPos);
+    void SetWorldShader(Shader* inWorldShader);
+    void SetRayShader(Shader* inRayShader);
+
+    void Teleport(glm::vec3 position);
 
     void ResetModel();
     void Rotate(glm::vec2 const& Rotate);

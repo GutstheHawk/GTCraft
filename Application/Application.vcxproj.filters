@@ -1384,6 +1384,8 @@
     <None Include="res\shaders\skyboxVertexShader.shader" />
     <None Include="res\shaders\chunkVertexShader.shader" />
     <None Include="res\shaders\chunkFragmentShader.shader" />
+    <None Include="res\shaders\RayVertex.shader" />
+    <None Include="res\shaders\RayFragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes.txt" />

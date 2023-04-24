@@ -4,7 +4,7 @@
 #define CZ 16
 #define SEED 1999.0f
 
-typedef glm::tvec4<GLbyte> byte4;
+typedef glm::tvec3<GLbyte> byte3;
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
@@ -16,43 +16,68 @@ typedef glm::tvec4<GLbyte> byte4;
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstddef>
 
 struct Vertex {
-	glm::vec3 Position;
-	glm::vec2 TexCoords;
+	byte3 Position;
+	uint8_t texIndex;
+	uint8_t lightingVal;
 	uint8_t type;
 };
 
 struct Chunk 
 {
-
-	uint8_t blocks[CX][CY][CZ];
+	uint8_t*** blocks;
+	Vertex* vertexes;
 	int elements;
 	bool changed;
-	VertexBuffer* chunkVertexBuffer;
-	VertexBufferLayout* chunkBufferLayout;
-	VertexArray* chunkVertexArray;
-	IndexBuffer* chunkIndexBuffer;
-	//unsigned int vbo;
+	int worldPosX = 0;
+	int worldPosZ = 0;
+	//VertexBuffer* chunkVertexBuffer;
+	//VertexBufferLayout* chunkBufferLayout;
+	//VertexArray* chunkVertexArray;
+	//IndexBuffer* chunkIndexBuffer;
+	unsigned int vbo;
+	unsigned int vao;
 
 	int heightmap[CX][CZ];
 
 	Chunk()
 	{
-		memset(blocks, 0, sizeof(blocks));
+		blocks =  new uint8_t ** [CX];
+		for (int i = 0; i < CX; i++) {
+			blocks[i] = new uint8_t * [CY];
+			for (int j = 0; j < CY; j++) {
+				blocks[i][j] = new uint8_t[CZ];
+			}
+		}
+
+		//memset(blocks[0][0], 0, CX * CY * CZ * sizeof(uint8_t));
+
+		vertexes = new Vertex[CX * CY * CZ * 6 * 6];
+		//memset(blocks, 0, sizeof(blocks));
 		elements = 0;
 		changed = true;
-		//glGenBuffers(1, &vbo);
-		genIndexBuffer();
+		glGenBuffers(1, &vbo);
+		glGenVertexArrays(1, &vao);
+		//genIndexBuffer();
 
-		fillWithDirt();
+		//fillWithDirt();
 
 		//generateHightmap();
 	}
 
 	~Chunk()
 	{
+		for (int i = 0; i < CX; i++) {
+			for (int j = 0; j < CY; j++) {
+				delete[] blocks[i][j];
+			}
+			delete[] blocks[i];
+		}
+		delete[] blocks;
 
+		delete[] vertexes;
 	}
 
 	uint8_t getBlock(int x, int y, int z)
@@ -70,14 +95,13 @@ struct Chunk
 	{
 		changed = false;
 
-		Vertex vertexes[CX * CY * CZ * 4 * 6];
 		int i = 0;
 
-		for (unsigned int x = 0; x < CX; x++)
+		for (int x = 0; x < CX; x++)
 		{
-			for (unsigned int y = 0; y < CY; y++)
+			for (int y = 0; y < CY; y++)
 			{
-				for (unsigned int z = 0; z < CZ; z++)
+				for (int z = 0; z < CZ; z++)
 				{
 					uint8_t type = blocks[x][y][z];
 
@@ -85,359 +109,281 @@ struct Chunk
 						continue;
 
 					// View from negative x
-					if ((x - 1) < 0)
+					if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
 					{
-						Vertex v0;
-						v0.Position = { x, y, z };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3(x, y, z);
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3(x, y, z + 1);
+						v1.texIndex = { 1 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3(x, y + 1, z);
+						v2.texIndex = { 3 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x, y + 1, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3(x, y + 1, z);
+						v3.texIndex = { 3 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
 
-						/*vertexes[i++] = byte4(x, y,     z,	 type);
-						vertexes[i++] = byte4(x, y,     z + 1, type);
-						vertexes[i++] = byte4(x, y + 1, z,     type);
-						vertexes[i++] = byte4(x, y + 1, z,	 type);
-						vertexes[i++] = byte4(x, y,     z + 1, type);
-						vertexes[i++] = byte4(x, y + 1, z + 1, type);*/
+						Vertex v4 = {};
+						v4.Position = byte3(x, y, z + 1);
+						v4.texIndex = { 1 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
+
+						Vertex v5 = {};
+						v5.Position = byte3(x, y + 1, z + 1);
+						v5.texIndex = { 2 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
-					else
-					{
-						Vertex v0;
-						v0.Position = { x, y, z };
-						v0.TexCoords = { 0.0, 0.0 };
-						v0.type = type;
-						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
-						vertexes[i++] = v1;
-
-						Vertex v2;
-						v0.Position = { x, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
-						vertexes[i++] = v2;
-
-						Vertex v3;
-						v0.Position = { x, y + 1, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
-						vertexes[i++] = v3;
-					}
 
 					// View from positive x
-					if ((x + 1) == CX)
+					if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
 					{
-						Vertex v0;
-						v0.Position = { x + 1, y, z };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3( x + 1, y, z );
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x + 1, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3( x + 1, y + 1, z );
+						v1.texIndex = { 3 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x + 1, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3( x + 1, y, z + 1 );
+						v2.texIndex = { 1 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x + 1, y + 1, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3( x + 1, y + 1, z );
+						v3.texIndex = { 1 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
-					}
-					else
-					{
-						if (!blocks[x + 1][y][z])
-						{
-							Vertex v0;
-							v0.Position = { x + 1, y, z };
-							v0.TexCoords = { 0.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v0;
 
-							Vertex v1;
-							v0.Position = { x + 1, y, z + 1 };
-							v0.TexCoords = { 1.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v1;
+						Vertex v4 = {};
+						v4.Position = byte3( x + 1, y + 1, z + 1 );
+						v4.texIndex = { 2 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
 
-							Vertex v2;
-							v0.Position = { x + 1, y + 1, z + 1 };
-							v0.TexCoords = { 1.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v2;
-
-							Vertex v3;
-							v0.Position = { x + 1, y + 1, z };
-							v0.TexCoords = { 0.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v3;
-						}
+						Vertex v5 = {};
+						v5.Position = byte3( x + 1, y, z + 1 );
+						v5.texIndex = { 3 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
 
 					// View from negative y
-					if ((y - 1) < 0)
+					if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
 					{
-						Vertex v0;
-						v0.Position = { x, y, z };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3( x, y, z );
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3( x + 1, y, z );
+						v1.texIndex = { 3 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x + 1, y, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3( x, y, z + 1 );
+						v2.texIndex = { 1 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x + 1, y, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3( x + 1, y, z );
+						v3.texIndex = { 3 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
-						/*vertexes[i++] = byte4(x,     y, z,     type);
-						vertexes[i++] = byte4(x + 1, y, z,     type);
-						vertexes[i++] = byte4(x,     y, z + 1, type);
-						vertexes[i++] = byte4(x + 1, y, z,     type);
-						vertexes[i++] = byte4(x + 1, y, z + 1, type);
-						vertexes[i++] = byte4(x,     y, z + 1, type);*/
-					}
-					else
-					{
-						if (!blocks[x][y - 1][z])
-						{
-							Vertex v0;
-							v0.Position = { x, y, z };
-							v0.TexCoords = { 0.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v0;
 
-							Vertex v1;
-							v0.Position = { x, y, z + 1 };
-							v0.TexCoords = { 1.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v1;
+						Vertex v4 = {};
+						v4.Position = byte3( x + 1, y, z + 1 );
+						v4.texIndex = { 2 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
 
-							Vertex v2;
-							v0.Position = { x + 1, y, z + 1 };
-							v0.TexCoords = { 1.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v2;
-
-							Vertex v3;
-							v0.Position = { x + 1, y, z };
-							v0.TexCoords = { 0.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v3;
-						}
+						Vertex v5 = {};
+						v5.Position = byte3( x, y, z + 1 );
+						v5.texIndex = { 1 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
 
 					// View from positive y
-					if ((y + 1) == CY)
+					if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
 					{
-						Vertex v0;
-						v0.Position = { x, y + 1, z };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3( x, y + 1, z );
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3( x, y + 1, z + 1 );
+						v1.texIndex = { 1 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x + 1, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3( x + 1, y + 1, z );
+						v2.texIndex = { 3 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x + 1, y + 1, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3( x, y + 1, z + 1 );
+						v3.texIndex = { 1 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
-					}
-					else
-					{
-						if (!blocks[x][y + 1][z])
-						{
-							Vertex v0;
-							v0.Position = { x, y + 1, z };
-							v0.TexCoords = { 0.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v0;
 
-							Vertex v1;
-							v0.Position = { x, y + 1, z + 1 };
-							v0.TexCoords = { 1.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v1;
+						Vertex v4 = {};
+						v4.Position = byte3( x + 1, y + 1, z + 1 );
+						v4.texIndex = { 2 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
 
-							Vertex v2;
-							v0.Position = { x + 1, y + 1, z + 1 };
-							v0.TexCoords = { 1.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v2;
-
-							Vertex v3;
-							v0.Position = { x + 1, y + 1, z };
-							v0.TexCoords = { 0.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v3;
-						}
+						Vertex v5 = {};
+						v5.Position = byte3( x + 1, y + 1, z );
+						v5.texIndex = { 3 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
 
 					// View from negative z
-					if ((z - 1) < 0)
+					if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
 					{
-						Vertex v0;
-						v0.Position = { x, y, z };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3( x, y, z );
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x + 1, y, z };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3( x, y + 1, z );
+						v1.texIndex = { 3 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x + 1, y + 1, z };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3( x + 1, y, z );
+						v2.texIndex = { 1 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x, y + 1, z };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3( x, y + 1, z );
+						v3.texIndex = { 3 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
-						/*vertexes[i++] = byte4(x,     y,	  z, type);
-						vertexes[i++] = byte4(x,     y + 1, z, type);
-						vertexes[i++] = byte4(x + 1, y,	  z, type);
-						vertexes[i++] = byte4(x,     y + 1, z, type);
-						vertexes[i++] = byte4(x + 1, y + 1, z, type);
-						vertexes[i++] = byte4(x + 1, y,	  z, type);*/
-					}
-					else
-					{
-						if (!blocks[x][y][z - 1])
-						{
-							Vertex v0;
-							v0.Position = { x, y, z };
-							v0.TexCoords = { 0.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v0;
 
-							Vertex v1;
-							v0.Position = { x + 1, y, z };
-							v0.TexCoords = { 1.0, 0.0 };
-							v0.type = type;
-							vertexes[i++] = v1;
+						Vertex v4 = {};
+						v4.Position = byte3( x + 1, y + 1, z );
+						v4.texIndex = { 2 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
 
-							Vertex v2;
-							v0.Position = { x + 1, y + 1, z };
-							v0.TexCoords = { 1.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v2;
-
-							Vertex v3;
-							v0.Position = { x, y + 1, z };
-							v0.TexCoords = { 0.0, 1.0 };
-							v0.type = type;
-							vertexes[i++] = v3;
-						}
+						Vertex v5 = {};
+						v5.Position = byte3( x + 1, y, z );
+						v5.texIndex = { 1 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
 
 
 					// View from positive z
-					if ((z + 1) == CZ)
+					if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
 					{
-						Vertex v0;
-						v0.Position = { x, y, z + 1 };
-						v0.TexCoords = { 0.0, 0.0 };
+						Vertex v0 = {};
+						v0.Position = byte3( x, y, z + 1 );
+						v0.texIndex = { 0 };
+						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x + 1, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
+						Vertex v1 = {};
+						v1.Position = byte3( x + 1, y, z + 1 );
+						v1.texIndex = { 1 };
+						v1.lightingVal = { 0 };
+						v1.type = type;
 						vertexes[i++] = v1;
 
-						Vertex v2;
-						v0.Position = { x + 1, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
+						Vertex v2 = {};
+						v2.Position = byte3( x, y + 1, z + 1 );
+						v2.texIndex = { 3 };
+						v2.lightingVal = { 0 };
+						v2.type = type;
 						vertexes[i++] = v2;
 
-						Vertex v3;
-						v0.Position = { x, y + 1, z + 1 };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
+						Vertex v3 = {};
+						v3.Position = byte3( x, y + 1, z + 1 );
+						v3.texIndex = { 3 };
+						v3.lightingVal = { 0 };
+						v3.type = type;
 						vertexes[i++] = v3;
-					}
-					else
-					{
-						Vertex v0;
-						v0.Position = { x, y, z + 1 };
-						v0.TexCoords = { 0.0, 0.0 };
-						v0.type = type;
-						vertexes[i++] = v0;
 
-						Vertex v1;
-						v0.Position = { x + 1, y, z + 1 };
-						v0.TexCoords = { 1.0, 0.0 };
-						v0.type = type;
-						vertexes[i++] = v1;
+						Vertex v4 = {};
+						v4.Position = byte3( x + 1, y, z + 1 );
+						v4.texIndex = { 1 };
+						v4.lightingVal = { 0 };
+						v4.type = type;
+						vertexes[i++] = v4;
 
-						Vertex v2;
-						v0.Position = { x + 1, y + 1, z + 1 };
-						v0.TexCoords = { 1.0, 1.0 };
-						v0.type = type;
-						vertexes[i++] = v2;
-
-						Vertex v3;
-						v0.Position = { x, y + 1, z + 1 };
-						v0.TexCoords = { 0.0, 1.0 };
-						v0.type = type;
-						vertexes[i++] = v3;
+						Vertex v5 = {};
+						v5.Position = byte3( x + 1, y + 1, z + 1 );
+						v5.texIndex = { 2 };
+						v5.lightingVal = { 0 };
+						v5.type = type;
+						vertexes[i++] = v5;
 					}
 				}
 			}
@@ -445,17 +391,17 @@ struct Chunk
 
 		elements = i;
 
-		VertexBuffer vb(vertexes, elements * sizeof* vertexes, GL_STATIC_DRAW);
+		/*VertexBuffer vb(vertexes, elements * sizeof* vertexes, GL_STATIC_DRAW);
 		chunkVertexBuffer = &vb;
 
 		VertexBufferLayout vbl;
 		vbl.Push<unsigned int>(3, GL_FALSE);
 		vbl.Push<float>(2, GL_FALSE);
 		vbl.Push<int8_t>(1, GL_FALSE);
-		chunkBufferLayout = &vbl;
-
-		/*glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, elements * sizeof *vertexes, vertexes, GL_STATIC_DRAW);*/
+		chunkBufferLayout = &vbl;*/
+		//std::cout << blocks[2][2][2] << std::endl;
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, elements * sizeof(Vertex), vertexes, GL_STATIC_DRAW);
 
 		//VertexBuffer vbo(vertex, elements * sizeof(vertex), GL_STATIC_DRAW);
 		//chunkBuffer = &vbo;
@@ -482,8 +428,8 @@ struct Chunk
 			offset += 4;
 		}
 
-		IndexBuffer ib(indices, maxIndexCount);
-		chunkIndexBuffer = &ib;
+		/*IndexBuffer ib(indices, maxIndexCount);
+		chunkIndexBuffer = &ib;*/
 
 	}
 
@@ -494,22 +440,44 @@ struct Chunk
 
 		if (!elements)
 			return;
+		
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-		//glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		//glVertexAttribPointer(0, 4, GL_BYTE, GL_FALSE, 0, 0);
+		glVertexAttribPointer(0, 3, GL_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
+		glEnableVertexAttribArray(0);
 
-		VertexArray chunkVA;
-		chunkVA.AddBuffer(*chunkVertexBuffer, *chunkBufferLayout);
-		chunkVA.Bind();
-		chunkVertexArray = &chunkVA;
+		glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texIndex));
+		glEnableVertexAttribArray(1);
 
-		chunkIndexBuffer->Bind();
+		glVertexAttribPointer(2, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, lightingVal));
+		glEnableVertexAttribArray(2);
 
-		glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, GL_STATIC_DRA);
-		//glDrawArrays(GL_TRIANGLES, 0, elements);
+		glVertexAttribPointer(3, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, type));
+		glEnableVertexAttribArray(3);
 
-		chunkIndexBuffer->Unbind();
-		chunkVA.Unbind();
+		glDrawArrays(GL_TRIANGLES, 0, elements);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(3);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		//VertexArray chunkVA;
+		//chunkVA.AddBuffer(*chunkVertexBuffer, *chunkBufferLayout);
+		//chunkVA.Bind();
+		//chunkVertexArray = &chunkVA;
+
+		//chunkIndexBuffer->Bind();
+
+		//glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, GL_STATIC_DRAW);
+		////glDrawArrays(GL_TRIANGLES, 0, elements);
+
+		//chunkIndexBuffer->Unbind();
+		//chunkVA.Unbind();
 	}
 
 	void fillWithDirt()
@@ -520,7 +488,21 @@ struct Chunk
 			{
 				for (int z = 0; z < CZ; z++)
 				{
-					setBlock(x, y, z, 1);
+					setBlock(x, y, z, 243);
+				}
+			}
+		}
+	}
+
+	void fillWithAir()
+	{
+		for (int x = 0; x < CX; x++)
+		{
+			for (int y = 0; y < CY; y++)
+			{
+				for (int z = 0; z < CZ; z++)
+				{
+					setBlock(x, y, z, 0);
 				}
 			}
 		}
@@ -596,6 +578,60 @@ struct Chunk
 				}
 			}
 		}
+	}
+
+	void getHeightmap(int8_t** sChunkHeightmap)
+	{
+		for (int x = 0; x < CX; x++)
+			for (int z = 0; z < CZ; z++)
+			{
+				heightmap[x][z] = sChunkHeightmap[x * worldPosX][z * worldPosZ];
+			}
+	}
+
+	void genPosXSide(int* x, int* y, int* z, uint8_t* type, int* i)
+	{
+		Vertex v0 = {};
+		v0.Position = byte3(*x, *y, *z);
+		v0.texIndex = { 0 };
+		v0.lightingVal = { 0 };
+		v0.type = *type;
+		vertexes[*i++] = v0;
+
+		Vertex v1 = {};
+		v1.Position = byte3(*x, *y, *z + 1);
+		v1.texIndex = { 1 };
+		v1.lightingVal = { 0 };
+		v1.type = *type;
+		vertexes[*i++] = v1;
+
+		Vertex v2 = {};
+		v2.Position = byte3(*x, *y + 1, *z);
+		v2.texIndex = { 3 };
+		v2.lightingVal = { 0 };
+		v2.type = *type;
+		vertexes[*i++] = v2;
+
+		Vertex v3 = {};
+		v3.Position = byte3(*x, *y + 1, *z);
+		v3.texIndex = { 3 };
+		v3.lightingVal = { 0 };
+		v3.type = *type;
+		vertexes[*i++] = v3;
+
+		Vertex v4 = {};
+		v4.Position = byte3(*x, *y, *z + 1);
+		v4.texIndex = { 1 };
+		v4.lightingVal = { 0 };
+		v4.type = *type;
+		vertexes[*i++] = v4;
+
+		Vertex v5 = {};
+		v5.Position = byte3(*x, *y + 1, *z + 1);
+		v5.texIndex = { 2 };
+		v5.lightingVal = { 0 };
+		v5.type = *type;
+		vertexes[*i++] = v5;
 	}
 };
 

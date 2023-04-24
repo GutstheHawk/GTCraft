@@ -1,10 +1,12 @@
 #pragma once
 #include "Camera.h"
+#include "Superchunk.h"
 
 class PlayerControls
 {
 public:
 	Camera* camera;
+	Superchunk* sChunk;
 
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;
@@ -18,6 +20,11 @@ public:
 	bool LEFT_PRESSED;
 	bool RIGHT_PRESSED;
 
+	bool LEFT_MOUSE_PRESSED = false;
+	unsigned int leftMousePresses = 0;
+	bool RIGHT_MOUSE_PRESSED = false;
+	unsigned int rightMousePresses = 0;
+
 	float pitch = -90.0f;
 	float yaw = 0.0f;
 
@@ -26,7 +33,7 @@ public:
 	float lastX = 0.0f;
 	float lastY = 0.0f;
 
-	PlayerControls(Camera*);
+	PlayerControls(Camera*, Superchunk* sChunk);
 	~PlayerControls();
 	void ProcessInputs();
 };

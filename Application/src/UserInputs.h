@@ -93,10 +93,40 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 }
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+void mousePosCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
 	
 	pc->xpos = xpos;
 	pc->ypos = ypos;
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+	{
+		pc->LEFT_MOUSE_PRESSED = true;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
+		pc->LEFT_MOUSE_PRESSED = false;
+		pc->leftMousePresses = 0;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		pc->RIGHT_MOUSE_PRESSED = true;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+	{
+		pc->RIGHT_MOUSE_PRESSED = false;
+		pc->rightMousePresses = 0;
+	}
+
+
+
 }

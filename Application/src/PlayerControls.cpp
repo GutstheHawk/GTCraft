@@ -1,8 +1,9 @@
 #include "PlayerControls.h"
 
-PlayerControls::PlayerControls(Camera* cam)
+PlayerControls::PlayerControls(Camera* cam, Superchunk* supChunk)
 {
 	camera = cam;
+	sChunk = supChunk;
 }
 
 void PlayerControls::ProcessInputs()
@@ -43,6 +44,18 @@ void PlayerControls::ProcessInputs()
 		camera->Rotate(glm::vec2(0.05f, 0.0f));
 
 	//Mouse Input
+
+	if (LEFT_MOUSE_PRESSED)
+	{
+		leftMousePresses++;
+		//camera->CastRay(4.0f);
+		if (leftMousePresses == 1)
+		{
+			sChunk->testCubeIntersections(camera);
+		}
+	}
+
+
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos;
 	lastX = xpos;
