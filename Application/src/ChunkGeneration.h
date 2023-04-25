@@ -1,13 +1,14 @@
 #pragma once
-#define CX 1
-#define CY 1
-#define CZ 1
+#define CX 16
+#define CY 16
+#define CZ 16
 #define SEED 1999.0f
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "BlockDefinitions.h"
 
 #include <glm/gtc/noise.hpp>
 
@@ -21,9 +22,7 @@ typedef glm::tvec3<GLubyte> ubyte3;
 #pragma pack(push, 1)
 struct Vertex {
 	ubyte3 Position;
-	uint8_t texIndex;
-	uint8_t lightingVal;
-	uint8_t type;
+	ubyte3 texIndex_lightingVal_type;
 };
 #pragma pack(pop)
 
@@ -103,6 +102,10 @@ struct Chunk
 
 		int i = 0;
 
+		uint8_t texIndex = 0;
+		uint8_t lightingVal = 0;
+
+
 		for (uint8_t x = 0; x < CX; x++)
 		{
 			for (uint8_t y = 0; y < CY; y++)
@@ -119,44 +122,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3(x, y, z);
-						v0.texIndex = { static_cast<uint8_t>(0) };
-						v0.lightingVal = { 0 };
-						v0.type = static_cast<uint8_t>(type);
+						texIndex = 0;
+						lightingVal = 0;
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3(x, y, z + 1);
-						v1.texIndex = { static_cast<uint8_t>(1) };
-						v1.lightingVal = { static_cast<uint8_t>(0) };
-						v1.type = static_cast<uint8_t>(type);
+						texIndex = 1;
+						lightingVal = 0;
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3(x, y + 1, z);
-						v2.texIndex = { static_cast<uint8_t>(3) };
-						v2.lightingVal = { static_cast<uint8_t>(0) };
-						v2.type = static_cast<uint8_t>(type);
+						texIndex = 3;
+						lightingVal = 0;
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3(x, y + 1, z);
-						v3.texIndex = { static_cast<uint8_t>(3) };
-						v3.lightingVal = { 0 };
-						v3.type = static_cast<uint8_t>(type);
+						texIndex = 3;
+						lightingVal = 0;
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3(x, y, z + 1);
-						v4.texIndex = { static_cast<uint8_t>(1) };
-						v4.lightingVal = { static_cast<uint8_t>(0) };
-						v4.type = static_cast<uint8_t>(type);
+						texIndex = 1;
+						lightingVal = 0;
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3(x, y + 1, z + 1);
-						v5.texIndex = { static_cast<uint8_t>(2) };
-						v5.lightingVal = { static_cast<uint8_t>(0) };
-						v5.type = static_cast<uint8_t>(type);
+						texIndex = 2;
+						lightingVal = 0;
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 
@@ -166,44 +169,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3( x + 1, y, z );
-						v0.texIndex = { 0 };
-						v0.lightingVal = { 0 };
-						v0.type = type;
+						texIndex = { 0 };
+						lightingVal = { 0 };
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3( x + 1, y + 1, z );
-						v1.texIndex = { 3 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3( x + 1, y, z + 1 );
-						v2.texIndex = { 1 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3( x + 1, y + 1, z );
-						v3.texIndex = { 1 };
-						v3.lightingVal = { 0 };
-						v3.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
-						v4.texIndex = { 2 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						texIndex = { 2 };
+						lightingVal = { 0 };
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3( x + 1, y, z + 1 );
-						v5.texIndex = { 3 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 
@@ -212,44 +215,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3( x, y, z );
-						v0.texIndex = { 0 };
-						v0.lightingVal = { 0 };
-						v0.type = type;
+						texIndex = { 0 };
+						lightingVal = { 0 };
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3( x + 1, y, z );
-						v1.texIndex = { 3 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3( x, y, z + 1 );
-						v2.texIndex = { 1 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3( x + 1, y, z );
-						v3.texIndex = { 3 };
-						v3.lightingVal = { 0 };
-						v3.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3( x + 1, y, z + 1 );
-						v4.texIndex = { 2 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						texIndex = { 2 };
+						lightingVal = { 0 };
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3( x, y, z + 1 );
-						v5.texIndex = { 1 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 
@@ -258,44 +261,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3( x, y + 1, z );
-						v0.texIndex = { 0 };
-						v0.lightingVal = { 0 };
-						v0.type = type;
+						texIndex = { 0 };
+						lightingVal = { 0 };
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3( x, y + 1, z + 1 );
-						v1.texIndex = { 1 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3( x + 1, y + 1, z );
-						v2.texIndex = { 3 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3( x, y + 1, z + 1 );
-						v3.texIndex = { 1 };
-						v3.lightingVal = { 0 };
-						v3.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
-						v4.texIndex = { 2 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						texIndex = { 2 };
+						lightingVal = { 0 };
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3( x + 1, y + 1, z );
-						v5.texIndex = { 3 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 
@@ -304,44 +307,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3( x, y, z );
-						v0.texIndex = { 0 };
-						v0.lightingVal = { 0 };
-						v0.type = type;
+						texIndex = { 0 };
+						lightingVal = { 0 };
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3( x, y + 1, z );
-						v1.texIndex = { 3 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3( x + 1, y, z );
-						v2.texIndex = { 1 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3( x, y + 1, z );
-						v3.texIndex = { 3 };
-						v3.lightingVal = { 0 };
-						v3.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3( x + 1, y + 1, z );
-						v4.texIndex = { 2 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						texIndex = { 2 };
+						lightingVal = { 0 };
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3( x + 1, y, z );
-						v5.texIndex = { 1 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 
@@ -351,44 +354,44 @@ struct Chunk
 					{
 						Vertex v0 = {};
 						v0.Position = ubyte3( x, y, z + 1 );
-						v0.texIndex = { 0 };
-						v0.lightingVal = { 0 };
-						v0.type = type;
+						texIndex = { 0 };
+						lightingVal = { 0 };
+						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
 						v1.Position = ubyte3( x + 1, y, z + 1 );
-						v1.texIndex = { 1 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
 						v2.Position = ubyte3( x, y + 1, z + 1 );
-						v2.texIndex = { 3 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
 						v3.Position = ubyte3( x, y + 1, z + 1 );
-						v3.texIndex = { 3 };
-						v3.lightingVal = { 0 };
-						v3.type = type;
+						texIndex = { 3 };
+						lightingVal = { 0 };
+						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
 						v4.Position = ubyte3( x + 1, y, z + 1 );
-						v4.texIndex = { 1 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						texIndex = { 1 };
+						lightingVal = { 0 };
+						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
 						v5.Position = ubyte3( x + 1, y + 1, z + 1 );
-						v5.texIndex = { 2 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						texIndex = { 2 };
+						lightingVal = { 0 };
+						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
 						vertexes[i++] = v5;
 					}
 				}
@@ -453,21 +456,13 @@ struct Chunk
 		glVertexAttribPointer(0, 3, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
 		glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texIndex));
+		glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texIndex_lightingVal_type));
 		glEnableVertexAttribArray(1);
-
-		glVertexAttribPointer(2, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, lightingVal));
-		glEnableVertexAttribArray(2);
-
-		glVertexAttribPointer(3, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, type));
-		glEnableVertexAttribArray(3);
 
 		glDrawArrays(GL_TRIANGLES, 0, elements);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glDisableVertexAttribArray(3);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
@@ -494,7 +489,7 @@ struct Chunk
 			{
 				for (int z = 0; z < CZ; z++)
 				{
-					setBlock(x, y, z, 243);
+					setBlock(x, y, z, GRASS);
 				}
 			}
 		}

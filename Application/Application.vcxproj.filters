@@ -956,6 +956,9 @@
     <ClInclude Include="src\Superchunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\BlockDefinitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">

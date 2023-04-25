@@ -204,7 +204,7 @@ int main(void)
 	cam->SetRayShader(&rayShader);
 	cam->SetWorldShader(&atlasShader);
 	glm::vec3 mapCenter = glm::vec3(((SCX / 2) - 1) * 16, (SCX - 2) * 16, ((SCZ / 2) - 1) * 16);
-	//cam->Teleport(mapCenter);
+	cam->Teleport(mapCenter);
 
 	Superchunk* sChunk = new Superchunk;
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
@@ -216,7 +216,7 @@ int main(void)
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Texture texture("res/textures/dirt.png");
-	Texture texture("res/textures/texture_atlas.jpg");
+	Texture texture("res/textures/alternate_atlas.png");
 	texture.Bind(GL_TEXTURE_2D, 0);
 	atlasShader.SetUniform1i("u_Texture", 0);
 
@@ -274,7 +274,7 @@ int main(void)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		glm::mat4 projection = cam->ReturnProjection();
 		glm::mat4 view = cam->ReturnView();
