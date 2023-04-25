@@ -51,7 +51,17 @@ void PlayerControls::ProcessInputs()
 		//camera->CastRay(4.0f);
 		if (leftMousePresses == 1)
 		{
-			sChunk->testCubeIntersections(camera);
+			sChunk->breakBlock(camera);
+		}
+	}
+
+	if (RIGHT_MOUSE_PRESSED)
+	{
+		rightMousePresses++;
+		//camera->CastRay(4.0f);
+		if (rightMousePresses == 1)
+		{
+			sChunk->placeBlock(camera);
 		}
 	}
 

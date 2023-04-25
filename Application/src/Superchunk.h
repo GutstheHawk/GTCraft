@@ -54,6 +54,15 @@ struct Superchunk
 					delete sChunk[x][y][z];*/
 	}
 
+    enum CubeFace {
+        PositiveX,
+        NegativeX,
+        PositiveY,
+        NegativeY,
+        PositiveZ,
+        NegativeZ,
+    };
+
     bool intersectRayAABB(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec3& aabbMin, const glm::vec3& aabbMax, float& tMin, float& tMax)
     {
         glm::vec3 invRayDirection = 1.0f / rayDirection;
@@ -66,7 +75,7 @@ struct Superchunk
         return tMax > tMin && tMax >= 0.0f;
     }
 
-    void testCubeIntersections(Camera* cam)
+    void breakBlock(Camera* cam)
     {
         std::pair<glm::vec3, glm::vec3> rayVecs = cam->CastRay(4.0f);
 
@@ -142,6 +151,156 @@ struct Superchunk
         }
 
     }
+
+    void placeBlock(Camera* cam)
+    {
+        std::pair<glm::vec3, glm::vec3> rayVecs = cam->CastRay(4.0f);
+
+        glm::vec3 rayOrigin = rayVecs.first;
+        glm::vec3 rayEnd = rayVecs.second;
+
+        std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
+        std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
+
+        int chunkPosX = static_cast<int>(floor(rayOrigin.x / 16.0f));
+        int chunkPosY = static_cast<int>(floor(rayOrigin.y / 16.0f));
+        int chunkPosZ = static_cast<int>(floor(rayOrigin.z / 16.0f));
+
+        //unsigned int chunkPosZ = static_cast<int>(glm::mod(rayOrigin.z, 16.0f));
+
+        std::cout << "chunkPosX: " << chunkPosX << std::endl;
+        std::cout << "chunkPosY: " << chunkPosY << std::endl;
+        std::cout << "chunkPosZ: " << chunkPosZ << std::endl;
+
+        Chunk* playerChunk = sChunk[chunkPosX][chunkPosY][chunkPosZ];
+        uint8_t*** chunkBlocks = playerChunk->blocks;
+
+        std::vector<std::pair<glm::ivec3, float>> intersectedCubes;
+        for (int x = 0; x < CX; x++)
+        {
+            for (int y = 0; y < CY; y++)
+            {
+                for (int z = 0; z < CZ; z++)
+                {
+                    if (chunkBlocks[x][y][z])
+                    {
+                        // Compute the bounding box of the cube
+                        glm::vec3 cubeWorldPos = { (chunkPosX * 16) + x, (chunkPosY * 16) + y, (chunkPosZ * 16) + z }; // position of the cube in world space
+                        glm::vec3 cubeMin = cubeWorldPos;
+                        glm::vec3 cubeMax = cubeWorldPos + 1.0f;
+
+                        // Test the ray for intersection with the bounding box
+                        float tMin, tMax;
+                        if (intersectRayAABB(rayOrigin, glm::normalize(rayEnd - rayOrigin), cubeMin, cubeMax, tMin, tMax))
+                        {
+                            // Compute the intersection point
+                            glm::vec3 intersectionPoint = rayOrigin + tMin * glm::normalize(rayEnd - rayOrigin);
+
+                            // Compute the distance from the camera to the intersection point
+                            float distance = glm::distance(rayOrigin, intersectionPoint);
+
+                            // Compute the world position of the cube
+                            //glm::ivec3 cubeCoords = glm::floor(cubePos + 0.5f); // add 0.5f to center the cube around its position
+                            glm::ivec3 worldCoords = glm::ivec3(cubeWorldPos); // compute the world coordinates of the cube
+
+                            // Add the coordinates of the cube and its distance from the camera to the list of intersected cubes
+                            intersectedCubes.push_back(std::make_pair(worldCoords, distance));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort the list of intersected cubes by distance from the camera
+        std::sort(intersectedCubes.begin(), intersectedCubes.end(),
+            [](const std::pair<glm::ivec3, float>& a, const std::pair<glm::ivec3, float>& b)
+            {
+                return a.second < b.second;
+            });
+
+        // Select the closest intersected cube
+        if (!intersectedCubes.empty())
+        {
+            glm::ivec3 closestCube = intersectedCubes.front().first;
+            
+            std::pair<glm::ivec3, CubeFace> closestCube_closestFace = getClosestCubeFace(intersectedCubes.front(), rayVecs);
+
+            CubeFace closestFace = closestCube_closestFace.second;
+
+            int cubeChunkX = closestCube.x % 16;
+            int cubeChunkY = closestCube.y % 16;
+            int cubeChunkZ = closestCube.z % 16;
+
+
+            switch (closestFace) {
+            case PositiveX:
+                playerChunk->setBlock(cubeChunkX + 1, cubeChunkY, cubeChunkZ, DIRT);
+                break;
+            case NegativeX:
+                playerChunk->setBlock(cubeChunkX - 1, cubeChunkY, cubeChunkZ, DIRT);
+                break;
+            case PositiveY:
+                playerChunk->setBlock(cubeChunkX, cubeChunkY + 1, cubeChunkZ, DIRT);
+                break;
+            case NegativeY:
+                playerChunk->setBlock(cubeChunkX, cubeChunkY - 1, cubeChunkZ, DIRT);
+                break;
+            case PositiveZ:
+                playerChunk->setBlock(cubeChunkX, cubeChunkY, cubeChunkZ + 1, DIRT);
+                break;
+            case NegativeZ:
+                playerChunk->setBlock(cubeChunkX, cubeChunkY, cubeChunkZ - 1, DIRT);
+                break;
+            default:
+                std::cout << "Invalid closest face." << std::endl;
+                break;
+            }
+
+
+
+            // do something with closestCube...
+            //playerChunk->setBlock(closestCube.x % 16, closestCube.y % 16, closestCube.z % 16, 0);
+        }
+
+    }
+
+    std::pair<glm::ivec3, CubeFace> getClosestCubeFace(std::pair<glm::ivec3, float>& closestCube, std::pair<glm::vec3, glm::vec3> rayCoords)
+    {
+        glm::vec3 rayOrigin = rayCoords.first;
+        glm::vec3 rayEnd = rayCoords.second;
+
+        //std::cout << "Closest Cube World Coords: " << to_string(closestCube) << std::endl;
+        // do something with closestCube...
+
+        // Compute the distance between the intersection point and each face of the cube
+        glm::vec3 intersectionPoint = rayOrigin + closestCube.second * glm::normalize(rayEnd - rayOrigin);
+        glm::vec3 cubeMin = glm::vec3(closestCube.first);
+        glm::vec3 cubeMax = glm::vec3(closestCube.first) + 1.0f;
+        glm::vec3 faceDistances[6] = {
+            glm::vec3(cubeMax.x, intersectionPoint.y, intersectionPoint.z) - intersectionPoint, // Positive X
+            glm::vec3(cubeMin.x, intersectionPoint.y, intersectionPoint.z) - intersectionPoint, // Negative X
+            glm::vec3(intersectionPoint.x, cubeMax.y, intersectionPoint.z) - intersectionPoint, // Positive Y
+            glm::vec3(intersectionPoint.x, cubeMin.y, intersectionPoint.z) - intersectionPoint, // Negative Y
+            glm::vec3(intersectionPoint.x, intersectionPoint.y, cubeMax.z) - intersectionPoint, // Positive Z
+            glm::vec3(intersectionPoint.x, intersectionPoint.y, cubeMin.z) - intersectionPoint, // Negative Z
+        };
+
+        // Find the face with the smallest distance
+        float minDistance = std::numeric_limits<float>::max();
+        CubeFace closestFace = PositiveX;
+        for (int i = 0; i < 6; i++) {
+            float distance = glm::length(faceDistances[i]);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestFace = static_cast<CubeFace>(i);
+            }
+        }
+
+        return std::make_pair(closestCube.first, closestFace);
+
+        //return std::make_pair(glm::ivec3(0), PositiveX); // return a default value if no intersection is found
+    }
+
 
     uint8_t get(int x, int y, int z) {
         int cx = x / CX;

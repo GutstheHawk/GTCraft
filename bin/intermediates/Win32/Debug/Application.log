@@ -1,16 +1,13 @@
 ﻿  Application.cpp
-C:\dev\GALINT\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\dev\GALINT\Application\src\BlockDefinitions.h(16,1): warning C4005: 'PINKWOOL': macro redefinition
-C:\dev\GALINT\Application\src\BlockDefinitions.h(13,1): message : see previous definition of 'PINKWOOL'
-C:\dev\GALINT\Application\src\UserInputs.h(100,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\Application.cpp(266,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\Application.cpp(248,6): warning C4101: 'size': unreferenced local variable
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(16,1): warning C4005: 'PINKWOOL': macro redefinition
+C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(13,1): message : see previous definition of 'PINKWOOL'
+C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(100,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(266,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(248,6): warning C4101: 'size': unreferenced local variable
   PlayerControls.cpp
-C:\dev\GALINT\Application\src\BlockDefinitions.h(16,1): warning C4005: 'PINKWOOL': macro redefinition
-C:\dev\GALINT\Application\src\BlockDefinitions.h(13,1): message : see previous definition of 'PINKWOOL'
+C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(16,1): warning C4005: 'PINKWOOL': macro redefinition
+C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(13,1): message : see previous definition of 'PINKWOOL'
   Generating Code...
-glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Application.vcxproj -> C:\dev\GALINT\bin\Win32\Debug\Application.exe
+  Application.vcxproj -> C:\dev\GALINT-MC-Clone\bin\Win32\Debug\Application.exe

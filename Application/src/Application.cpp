@@ -114,8 +114,8 @@ int main(void)
 
 	};
 
-	float skyboxVertices[] = {
-		// positions          
+	float skyboxVertices[] = {         
+		// Front face
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -204,7 +204,7 @@ int main(void)
 	cam->SetRayShader(&rayShader);
 	cam->SetWorldShader(&atlasShader);
 	glm::vec3 mapCenter = glm::vec3(((SCX / 2) - 1) * 16, (SCX - 2) * 16, ((SCZ / 2) - 1) * 16);
-	cam->Teleport(mapCenter);
+	//cam->Teleport(mapCenter);
 
 	Superchunk* sChunk = new Superchunk;
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
@@ -274,7 +274,7 @@ int main(void)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		glm::mat4 projection = cam->ReturnProjection();
 		glm::mat4 view = cam->ReturnView();
@@ -285,7 +285,8 @@ int main(void)
 		//glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
 		//skyboxShader.Bind();
 		////glUseProgram(skyboxShader);
-		//glm::mat4 sbView = glm::mat4(glm::mat3(cam->ReturnUpdatedView())); // remove translation from the view matrix
+		////glm::mat4 sbProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
+		//glm::mat4 sbView = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
 		//skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
 		//skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
 		//// skybox cube
