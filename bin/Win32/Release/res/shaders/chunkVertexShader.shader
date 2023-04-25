@@ -1,9 +1,10 @@
 #version 460 core
+#extension GL_NV_gpu_shader5 : enable
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in uint texIndex;
-layout(location = 2) in uint lightingLev;
-layout(location = 3) in uint type;
+layout(location = 1) in uint8_t  texIndex;
+layout(location = 2) in uint8_t  lightingLev;
+layout(location = 3) in uint8_t  type;
 
 
 uniform mat4 pvm;
@@ -17,7 +18,7 @@ void main()
     /*float textureRes = 512.0;
     float halfPixelOffset = (0.5 / textureRes);*/
 
-    float floatTexID = uintBitsToFloat(type);
+    float floatTexID = float(type);
 
     float texIDX = mod(floatTexID, 16.0) - 1.0;
     float texIDY = floor(floatTexID / 16.0);
@@ -32,13 +33,13 @@ void main()
         {0.0f, 1.0f}
     };
 
-    int intTexIndex = int(texIndex);
+    uint uintTexIndex = uint(texIndex);
 
-    vec2 texCoord = texCoords[texIndex];
+    vec2 texCoord = texCoords[uintTexIndex];
     vec2 atlasOffsetSize = vec2(16.0, 16.0);
 
-    v_TexCoord = (texCoord / atlasOffsetSize) + (atlasIndexes / atlasOffsetSize);
-    //v_TexCoord = texCoord;
+    //v_TexCoord = (texCoord / atlasOffsetSize) + (atlasIndexes / atlasOffsetSize);
+    v_TexCoord = texCoord;
 
     gl_Position = pvm * vec4(position, 1.0);
 }

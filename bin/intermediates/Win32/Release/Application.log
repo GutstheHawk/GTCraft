@@ -2,14 +2,14 @@
 C:\dev\GALINT\Application\src\Application.cpp(20,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 C:\dev\GALINT\Application\src\UserInputs.h(100,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\dev\GALINT\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\Application.cpp(288,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\dev\GALINT\Application\src\Application.cpp(270,6): warning C4101: 'size': unreferenced local variable
+C:\dev\GALINT\Application\src\Application.cpp(266,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT\Application\src\Application.cpp(248,6): warning C4101: 'size': unreferenced local variable
   PlayerControls.cpp
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  11 of 913 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    19 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+C:\dev\GALINT\Application\src\VertexBufferLayout.h(21): warning C4715: 'VertexBufferElement::GetSizeOfType': not all control paths return a value
+  All 919 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
 glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
   Application.vcxproj -> C:\dev\GALINT\bin\Win32\Release\Application.exe

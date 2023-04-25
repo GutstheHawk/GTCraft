@@ -1,10 +1,8 @@
 #pragma once
-#define CX 16
-#define CY 16
-#define CZ 16
+#define CX 1
+#define CY 1
+#define CZ 1
 #define SEED 1999.0f
-
-typedef glm::tvec3<GLbyte> byte3;
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
@@ -18,12 +16,16 @@ typedef glm::tvec3<GLbyte> byte3;
 #include <string>
 #include <cstddef>
 
+typedef glm::tvec3<GLubyte> ubyte3;
+
+#pragma pack(push, 1)
 struct Vertex {
-	byte3 Position;
+	ubyte3 Position;
 	uint8_t texIndex;
 	uint8_t lightingVal;
 	uint8_t type;
 };
+#pragma pack(pop)
 
 struct Chunk 
 {
@@ -33,6 +35,8 @@ struct Chunk
 	bool changed;
 	int worldPosX;
 	int worldPosZ;
+
+	int maxChunkVertices = (CX * CY * CZ * 6 * 6);
 	//VertexBuffer* chunkVertexBuffer;
 	//VertexBufferLayout* chunkBufferLayout;
 	//VertexArray* chunkVertexArray;
@@ -99,11 +103,11 @@ struct Chunk
 
 		int i = 0;
 
-		for (int x = 0; x < CX; x++)
+		for (uint8_t x = 0; x < CX; x++)
 		{
-			for (int y = 0; y < CY; y++)
+			for (uint8_t y = 0; y < CY; y++)
 			{
-				for (int z = 0; z < CZ; z++)
+				for (uint8_t z = 0; z < CZ; z++)
 				{
 					uint8_t type = blocks[x][y][z];
 
@@ -114,45 +118,45 @@ struct Chunk
 					if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3(x, y, z);
-						v0.texIndex = { 0 };
+						v0.Position = ubyte3(x, y, z);
+						v0.texIndex = { static_cast<uint8_t>(0) };
 						v0.lightingVal = { 0 };
-						v0.type = type;
+						v0.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3(x, y, z + 1);
-						v1.texIndex = { 1 };
-						v1.lightingVal = { 0 };
-						v1.type = type;
+						v1.Position = ubyte3(x, y, z + 1);
+						v1.texIndex = { static_cast<uint8_t>(1) };
+						v1.lightingVal = { static_cast<uint8_t>(0) };
+						v1.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3(x, y + 1, z);
-						v2.texIndex = { 3 };
-						v2.lightingVal = { 0 };
-						v2.type = type;
+						v2.Position = ubyte3(x, y + 1, z);
+						v2.texIndex = { static_cast<uint8_t>(3) };
+						v2.lightingVal = { static_cast<uint8_t>(0) };
+						v2.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3(x, y + 1, z);
-						v3.texIndex = { 3 };
+						v3.Position = ubyte3(x, y + 1, z);
+						v3.texIndex = { static_cast<uint8_t>(3) };
 						v3.lightingVal = { 0 };
-						v3.type = type;
+						v3.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3(x, y, z + 1);
-						v4.texIndex = { 1 };
-						v4.lightingVal = { 0 };
-						v4.type = type;
+						v4.Position = ubyte3(x, y, z + 1);
+						v4.texIndex = { static_cast<uint8_t>(1) };
+						v4.lightingVal = { static_cast<uint8_t>(0) };
+						v4.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3(x, y + 1, z + 1);
-						v5.texIndex = { 2 };
-						v5.lightingVal = { 0 };
-						v5.type = type;
+						v5.Position = ubyte3(x, y + 1, z + 1);
+						v5.texIndex = { static_cast<uint8_t>(2) };
+						v5.lightingVal = { static_cast<uint8_t>(0) };
+						v5.type = static_cast<uint8_t>(type);
 						vertexes[i++] = v5;
 					}
 
@@ -161,42 +165,42 @@ struct Chunk
 					if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3( x + 1, y, z );
+						v0.Position = ubyte3( x + 1, y, z );
 						v0.texIndex = { 0 };
 						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3( x + 1, y + 1, z );
+						v1.Position = ubyte3( x + 1, y + 1, z );
 						v1.texIndex = { 3 };
 						v1.lightingVal = { 0 };
 						v1.type = type;
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3( x + 1, y, z + 1 );
+						v2.Position = ubyte3( x + 1, y, z + 1 );
 						v2.texIndex = { 1 };
 						v2.lightingVal = { 0 };
 						v2.type = type;
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3( x + 1, y + 1, z );
+						v3.Position = ubyte3( x + 1, y + 1, z );
 						v3.texIndex = { 1 };
 						v3.lightingVal = { 0 };
 						v3.type = type;
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3( x + 1, y + 1, z + 1 );
+						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
 						v4.texIndex = { 2 };
 						v4.lightingVal = { 0 };
 						v4.type = type;
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3( x + 1, y, z + 1 );
+						v5.Position = ubyte3( x + 1, y, z + 1 );
 						v5.texIndex = { 3 };
 						v5.lightingVal = { 0 };
 						v5.type = type;
@@ -207,42 +211,42 @@ struct Chunk
 					if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3( x, y, z );
+						v0.Position = ubyte3( x, y, z );
 						v0.texIndex = { 0 };
 						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3( x + 1, y, z );
+						v1.Position = ubyte3( x + 1, y, z );
 						v1.texIndex = { 3 };
 						v1.lightingVal = { 0 };
 						v1.type = type;
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3( x, y, z + 1 );
+						v2.Position = ubyte3( x, y, z + 1 );
 						v2.texIndex = { 1 };
 						v2.lightingVal = { 0 };
 						v2.type = type;
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3( x + 1, y, z );
+						v3.Position = ubyte3( x + 1, y, z );
 						v3.texIndex = { 3 };
 						v3.lightingVal = { 0 };
 						v3.type = type;
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3( x + 1, y, z + 1 );
+						v4.Position = ubyte3( x + 1, y, z + 1 );
 						v4.texIndex = { 2 };
 						v4.lightingVal = { 0 };
 						v4.type = type;
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3( x, y, z + 1 );
+						v5.Position = ubyte3( x, y, z + 1 );
 						v5.texIndex = { 1 };
 						v5.lightingVal = { 0 };
 						v5.type = type;
@@ -253,42 +257,42 @@ struct Chunk
 					if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3( x, y + 1, z );
+						v0.Position = ubyte3( x, y + 1, z );
 						v0.texIndex = { 0 };
 						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3( x, y + 1, z + 1 );
+						v1.Position = ubyte3( x, y + 1, z + 1 );
 						v1.texIndex = { 1 };
 						v1.lightingVal = { 0 };
 						v1.type = type;
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3( x + 1, y + 1, z );
+						v2.Position = ubyte3( x + 1, y + 1, z );
 						v2.texIndex = { 3 };
 						v2.lightingVal = { 0 };
 						v2.type = type;
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3( x, y + 1, z + 1 );
+						v3.Position = ubyte3( x, y + 1, z + 1 );
 						v3.texIndex = { 1 };
 						v3.lightingVal = { 0 };
 						v3.type = type;
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3( x + 1, y + 1, z + 1 );
+						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
 						v4.texIndex = { 2 };
 						v4.lightingVal = { 0 };
 						v4.type = type;
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3( x + 1, y + 1, z );
+						v5.Position = ubyte3( x + 1, y + 1, z );
 						v5.texIndex = { 3 };
 						v5.lightingVal = { 0 };
 						v5.type = type;
@@ -299,42 +303,42 @@ struct Chunk
 					if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3( x, y, z );
+						v0.Position = ubyte3( x, y, z );
 						v0.texIndex = { 0 };
 						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3( x, y + 1, z );
+						v1.Position = ubyte3( x, y + 1, z );
 						v1.texIndex = { 3 };
 						v1.lightingVal = { 0 };
 						v1.type = type;
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3( x + 1, y, z );
+						v2.Position = ubyte3( x + 1, y, z );
 						v2.texIndex = { 1 };
 						v2.lightingVal = { 0 };
 						v2.type = type;
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3( x, y + 1, z );
+						v3.Position = ubyte3( x, y + 1, z );
 						v3.texIndex = { 3 };
 						v3.lightingVal = { 0 };
 						v3.type = type;
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3( x + 1, y + 1, z );
+						v4.Position = ubyte3( x + 1, y + 1, z );
 						v4.texIndex = { 2 };
 						v4.lightingVal = { 0 };
 						v4.type = type;
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3( x + 1, y, z );
+						v5.Position = ubyte3( x + 1, y, z );
 						v5.texIndex = { 1 };
 						v5.lightingVal = { 0 };
 						v5.type = type;
@@ -346,42 +350,42 @@ struct Chunk
 					if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
 					{
 						Vertex v0 = {};
-						v0.Position = byte3( x, y, z + 1 );
+						v0.Position = ubyte3( x, y, z + 1 );
 						v0.texIndex = { 0 };
 						v0.lightingVal = { 0 };
 						v0.type = type;
 						vertexes[i++] = v0;
 
 						Vertex v1 = {};
-						v1.Position = byte3( x + 1, y, z + 1 );
+						v1.Position = ubyte3( x + 1, y, z + 1 );
 						v1.texIndex = { 1 };
 						v1.lightingVal = { 0 };
 						v1.type = type;
 						vertexes[i++] = v1;
 
 						Vertex v2 = {};
-						v2.Position = byte3( x, y + 1, z + 1 );
+						v2.Position = ubyte3( x, y + 1, z + 1 );
 						v2.texIndex = { 3 };
 						v2.lightingVal = { 0 };
 						v2.type = type;
 						vertexes[i++] = v2;
 
 						Vertex v3 = {};
-						v3.Position = byte3( x, y + 1, z + 1 );
+						v3.Position = ubyte3( x, y + 1, z + 1 );
 						v3.texIndex = { 3 };
 						v3.lightingVal = { 0 };
 						v3.type = type;
 						vertexes[i++] = v3;
 
 						Vertex v4 = {};
-						v4.Position = byte3( x + 1, y, z + 1 );
+						v4.Position = ubyte3( x + 1, y, z + 1 );
 						v4.texIndex = { 1 };
 						v4.lightingVal = { 0 };
 						v4.type = type;
 						vertexes[i++] = v4;
 
 						Vertex v5 = {};
-						v5.Position = byte3( x + 1, y + 1, z + 1 );
+						v5.Position = ubyte3( x + 1, y + 1, z + 1 );
 						v5.texIndex = { 2 };
 						v5.lightingVal = { 0 };
 						v5.type = type;
@@ -403,7 +407,7 @@ struct Chunk
 		chunkBufferLayout = &vbl;*/
 		//std::cout << blocks[2][2][2] << std::endl;
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, elements * sizeof(Vertex), vertexes, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, maxChunkVertices * sizeof(Vertex), vertexes, GL_STATIC_DRAW);
 
 		//VertexBuffer vbo(vertex, elements * sizeof(vertex), GL_STATIC_DRAW);
 		//chunkBuffer = &vbo;
@@ -446,7 +450,7 @@ struct Chunk
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-		glVertexAttribPointer(0, 3, GL_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
+		glVertexAttribPointer(0, 3, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Position));
 		glEnableVertexAttribArray(0);
 
 		glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texIndex));
@@ -514,8 +518,8 @@ struct Chunk
 	{
 		float heightmapPregen[CX][CZ];
 
-		float yFactor = 1.0f / (CX - 1);
-		float xFactor = 1.0f / (CZ - 1);
+		float yFactor = 1.0f / (CX);
+		float xFactor = 1.0f / (CZ);
 		float a = 1.0f;
 		float b = 2.0f;
 
@@ -591,7 +595,7 @@ struct Chunk
 			}
 	}
 
-	void genPosXSide(int* x, int* y, int* z, uint8_t* type, int* i)
+	/*void genPosXSide(int* x, int* y, int* z, uint8_t* type, int* i)
 	{
 		Vertex v0 = {};
 		v0.Position = byte3(*x, *y, *z);
@@ -634,6 +638,6 @@ struct Chunk
 		v5.lightingVal = { 0 };
 		v5.type = *type;
 		vertexes[*i++] = v5;
-	}
+	}*/
 };
 

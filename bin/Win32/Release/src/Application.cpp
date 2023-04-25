@@ -114,28 +114,6 @@ int main(void)
 
 	};
 
-	unsigned int indices[] = {
-		//front
-		1,  2,  3,
-		3,  0,  1,
-		//top
-		4,  5,  6,
-		6,  7,  4,
-		//back
-		8,  9,  10,
-		10, 11, 8,
-		//bottom
-		12, 13, 14,
-		14, 15, 12,
-		//left
-		16, 17, 18,
-		18, 19, 16,
-		//right
-		20, 21, 22,
-		22, 23, 20
-
-	};
-
 	float skyboxVertices[] = {
 		// positions          
 		-1.0f,  1.0f, -1.0f,
@@ -226,7 +204,7 @@ int main(void)
 	cam->SetRayShader(&rayShader);
 	cam->SetWorldShader(&atlasShader);
 	glm::vec3 mapCenter = glm::vec3(((SCX / 2) - 1) * 16, (SCX - 2) * 16, ((SCZ / 2) - 1) * 16);
-	cam->Teleport(mapCenter);
+	//cam->Teleport(mapCenter);
 
 	Superchunk* sChunk = new Superchunk;
 	PlayerControls* pc = new PlayerControls(cam, sChunk);

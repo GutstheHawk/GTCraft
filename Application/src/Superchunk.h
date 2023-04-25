@@ -3,8 +3,6 @@
 #define SCY 2
 #define SCZ 1
 
-typedef glm::tvec4<GLbyte> byte4;
-
 #include <GL/glew.h>
 #include "VertexBuffer.h"
 #include "VertexArray.h"
@@ -218,8 +216,8 @@ struct Superchunk
 
     void generateSuperchunkHeightmap(float inSeed)
     {
-        float yFactor = 1.0f / (CX - 1);
-        float xFactor = 1.0f / (CZ - 1);
+        float yFactor = 1.0f / (CX);
+        float xFactor = 1.0f / (CZ);
 
         float seed = inSeed;
         glm::vec2 offset = glm::vec2(seed, seed);
