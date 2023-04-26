@@ -481,7 +481,7 @@ struct Chunk
 		//chunkVA.Unbind();
 	}
 
-	void fillWithDirt()
+	void fillWithBlock(uint8_t blockType)
 	{
 		for (int x = 0; x < CX; x++)
 		{
@@ -489,7 +489,7 @@ struct Chunk
 			{
 				for (int z = 0; z < CZ; z++)
 				{
-					setBlock(x, y, z, GRASS);
+					setBlock(x, y, z, blockType);
 				}
 			}
 		}
@@ -561,20 +561,23 @@ struct Chunk
 
 	void applyHeightmap()
 	{
-		int bottomStartingHeight = (CY - 1) - 10;
+		//int bottomStartingHeight = (CY - 1) - 10;
 
 
-		for (int y = bottomStartingHeight; y < CY; y++)
+		for (int y = 0; y < CY; y++)
 		{
 			for (int x = 0; x < CX; x++)
 			{
 				for (int z = 0; z < CZ; z++)
 				{
 					//std::cout << heightmap[x][z] << std::endl;
-					setBlock(x, y, z, 0);
-					if (heightmap[x][z] >= (y - bottomStartingHeight))
+					if (y < heightmap[x][z])
 					{
-						setBlock(x, y, z, 1);
+						setBlock(x, y, z, DIRT);
+					}
+					if (y == heightmap[x][z])
+					{
+						setBlock(x, y, z, GRASS);
 					}
 				}
 			}

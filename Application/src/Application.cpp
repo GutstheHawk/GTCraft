@@ -43,7 +43,7 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	const int windowWidth = 1280;
 	const int windowHeight = 720;
@@ -203,8 +203,8 @@ int main(void)
 	Camera* cam = new Camera();
 	cam->SetRayShader(&rayShader);
 	cam->SetWorldShader(&atlasShader);
-	glm::vec3 mapCenter = glm::vec3(((SCX / 2) - 1) * 16, (SCX - 2) * 16, ((SCZ / 2) - 1) * 16);
-	//cam->Teleport(mapCenter);
+	glm::vec3 mapCenter = glm::vec3((SCX * 16) / 2, SCY * 16, (SCZ * 16) / 2);
+	cam->Teleport(mapCenter);
 
 	Superchunk* sChunk = new Superchunk;
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
@@ -309,7 +309,16 @@ int main(void)
 
 		//atlasVA.Bind();
 
+		glEnable(GL_FOG);
+		GLfloat fogColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		glFogfv(GL_FOG_COLOR, fogColor);
+		glFogi(GL_FOG_MODE, GL_LINEAR);
+		glFogf(GL_FOG_START, 10.0f);
+		glFogf(GL_FOG_END, 50.0f);
+
 		sChunk->render(cam, &atlasShader);
+
+		glDisable(GL_FOG);
 
 		//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 

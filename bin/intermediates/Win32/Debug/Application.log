@@ -6,8 +6,4 @@ C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(100,13): warning C4244: '=':
 C:\dev\GALINT-MC-Clone\Application\src\UserInputs.h(101,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(266,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(248,6): warning C4101: 'size': unreferenced local variable
-  PlayerControls.cpp
-C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(16,1): warning C4005: 'PINKWOOL': macro redefinition
-C:\dev\GALINT-MC-Clone\Application\src\BlockDefinitions.h(13,1): message : see previous definition of 'PINKWOOL'
-  Generating Code...
   Application.vcxproj -> C:\dev\GALINT-MC-Clone\bin\Win32\Debug\Application.exe

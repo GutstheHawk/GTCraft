@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 1
+#define SCX 16
 #define SCY 2
-#define SCZ 1
+#define SCZ 16
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
@@ -35,9 +35,10 @@ struct Superchunk
         }
 
         fillSuperchunk();
-        //generateSuperchunkHeightmap(42.0f);
-        //setChunkHeightMaps();
-        //applyHeightmaps();
+        generateSuperchunkHeightmap(42.0f);
+        setChunkHeightMaps();
+        applyHeightmaps();
+        
         //generateHightmap();
         //applyHightmap();
 	}
@@ -359,11 +360,11 @@ struct Superchunk
                         Chunk* chunk = new Chunk();
                         
 
-                        if (y == 0 || y == 1)
+                        if (y == 0)
                         {
-                            chunk->fillWithDirt();
+                            chunk->fillWithBlock(STONE);
                         }
-                        if (y == 2)
+                        if (y > 0)
                         {
                             chunk->fillWithAir();
                         }
@@ -398,38 +399,39 @@ struct Superchunk
         float yy = 0.0f;
 
         for (int x = 0; x < SCX; x++)
-            for (int y = 0; y < SCY; y++)
-                for (int z = 0; z < SCZ; z++)
-                    if (sChunk[x][y][z])
+        {
+            for (int z = 0; z < SCZ; z++)
+            {
+                for (int row = 0; row < CX; row++)
+                {
+                    for (int col = 0; col < CZ; col++)
                     {
-                        for (int row = 0; row < CX; row++)
+                        xx = xFactor * ((x * 16) + col);
+                        yy = yFactor * ((z * 16) + row);
+
+                        sum = 0.0f;
+                        freq = a;
+                        scale = b;
+
+                        // Compute the sum for each octave
+                        for (int oct = 0; oct < 4; oct++)
                         {
-                            for (int col = 0; col < CZ; col++)
-                            {
-                                xx = xFactor * col;
-                                yy = yFactor * row;
+                            glm::vec2 p(xx * freq, yy * freq);
+                            val = glm::perlin(p) / scale;
+                            sum += val;
+                            result = (sum + 1.0f) / 2.0f;
 
-                                sum = 0.0f;
-                                freq = a;
-                                scale = b;
-
-                                // Compute the sum for each octave
-                                for (int oct = 0; oct < 4; oct++)
-                                {
-                                    glm::vec2 p(xx * freq, yy * freq);
-                                    val = glm::perlin(p) / scale;
-                                    sum += val;
-                                    result = (sum + 1.0f) / 2.0f;
-
-                                    // Store in texture buffer
-                                    //std::cout << static_cast<unsigned int>(result * 16) << std::endl;
-                                    heightmap[row][col] = static_cast<uint8_t>(result * 16);
-                                    freq *= 2.0f;   // Double the frequency
-                                    scale *= b;
-                                }
-                            }
+                            // Store in texture buffer
+                            //std::cout << static_cast<unsigned int>(result * 16) << std::endl;
+                            heightmap[(x * 16) + col][(z * 16) + row] = static_cast<uint8_t>(result * 16);
+                            freq *= 2.0f;   // Double the frequency
+                            scale *= b;
                         }
                     }
+                }
+            }
+        }
+
     }
 
     
@@ -438,7 +440,14 @@ struct Superchunk
         for (int x = 0; x < SCX; x++)
            for (int z = 0; z < SCZ; z++)
            {
-               sChunk[x][SCY -1][z]->getHeightmap(heightmap);
+               if (SCY >= 3)
+               {
+                   sChunk[x][2][z]->getHeightmap(heightmap);
+               }
+               else
+               {
+                   sChunk[x][SCY - 1][z]->getHeightmap(heightmap);
+               }
            }
     }
 
@@ -447,7 +456,14 @@ struct Superchunk
         for (int x = 0; x < SCX; x++)
             for (int z = 0; z < SCZ; z++)
             {
-                sChunk[x][SCY - 1][z]->applyHeightmap();
+                if (SCY >= 3)
+                {
+                    sChunk[x][2][z]->applyHeightmap();
+                }
+                else
+                {
+                    sChunk[x][SCY - 1][z]->applyHeightmap();
+                }
             }
     }
 };
