@@ -1,5 +1,8 @@
 #pragma once
 
+#define YELLOWFLOWER 254
+#define REDFLOWER 253
+
 #define REDBRICK 248
 #define MARBLETOP 247
 #define MARBLESIDE 246
@@ -8,6 +11,10 @@
 #define DIRT 243
 #define STONE 242
 #define GRASS 241
+
+#define OAKLOGTOP 230
+#define OAKLOG 229
+#define LEAVES 198
 
 
 #define PINKWOOL 131

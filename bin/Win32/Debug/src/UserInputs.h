@@ -63,10 +63,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
             const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
             glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			//glfwSetWindowMonitor(window, primaryMonitor, 0, 0, 1920, 1080, mode->refreshRate);
         }
         else
         {
-            glfwSetWindowMonitor(window, NULL, 200, 200, 1280, 720, 0);
+			glfwSetWindowMonitor(window, NULL, 200, 200, 1280, 720, 0);
+            //glfwSetWindowMonitor(window, NULL, 200, 200, 1920, 1080, 0);
         }
     }
 

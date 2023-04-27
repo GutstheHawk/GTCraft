@@ -96,6 +96,8 @@ void Texture::Unbind(unsigned int type) const
 
 void Texture::loadCubemap(std::vector<std::string> faces)
 {
+
+	stbi_set_flip_vertically_on_load(0);
 	glGenTextures(1, &m_RendererID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
 

@@ -12,6 +12,22 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     //Camera* cam = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
 	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
 
+	if (key == GLFW_KEY_E && action == GLFW_PRESS)
+	{
+		if (pc->inventoryToggle == true)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			pc->inventoryToggle = false;
+
+		}
+		else if (pc->inventoryToggle == false)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			pc->inventoryToggle = true;
+		}
+
+	}
+
 
     //Main Keys
     //if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
@@ -63,12 +79,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
             const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
             glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			//glfwSetWindowMonitor(window, primaryMonitor, 0, 0, 1920, 1080, mode->refreshRate);
         }
         else
         {
-            glfwSetWindowMonitor(window, NULL, 200, 200, 1280, 720, 0);
+			glfwSetWindowMonitor(window, NULL, 200, 200, 1280, 720, 0);
+            //glfwSetWindowMonitor(window, NULL, 200, 200, 1920, 1080, 0);
         }
     }
+
+	if (key == GLFW_KEY_F2 && action == GLFW_PRESS)
+	{
+		pc->saveState = true;
+	}
+
+	if (key == GLFW_KEY_F3 && action == GLFW_PRESS)
+	{
+		pc->loadState = true;
+	}
 
 	//Object Rotation Keys
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
@@ -97,8 +125,12 @@ void mousePosCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
 	
-	pc->xpos = xpos;
-	pc->ypos = ypos;
+	if (pc->inventoryToggle == false)
+	{
+		pc->xpos = xpos;
+		pc->ypos = ypos;
+	}
+
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)

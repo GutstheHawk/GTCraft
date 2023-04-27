@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera()
-	: Projection(glm::perspective(glm::radians(95.0f), 16.0f / 9.0f, 0.1f, 100.f)),
+	: Projection(glm::perspective(glm::radians(95.0f), 16.0f / 9.0f, 0.1f, 150.f)),
 	View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))),
 	Model(glm::mat4(1.0f)), cameraRight(glm::vec3(0.0f, 0.0f, 0.0f)), cameraUp(glm::vec3(0.0f, 0.0f, 0.0f))
 	//glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f))

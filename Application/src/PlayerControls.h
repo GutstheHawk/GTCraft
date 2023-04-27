@@ -1,12 +1,20 @@
 #pragma once
 #include "Camera.h"
 #include "Superchunk.h"
+#include "SaveAndLoad.h"
 
 class PlayerControls
 {
 public:
 	Camera* camera;
 	Superchunk* sChunk;
+
+	uint8_t selectedBlockType = DIRT;
+
+	bool saveState = 0;
+	bool loadState = 0;
+
+	bool inventoryToggle = false;
 
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;

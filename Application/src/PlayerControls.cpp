@@ -49,7 +49,7 @@ void PlayerControls::ProcessInputs()
 	{
 		leftMousePresses++;
 		//camera->CastRay(4.0f);
-		if (leftMousePresses == 1)
+		if (leftMousePresses == 1 && !inventoryToggle)
 		{
 			sChunk->breakBlock(camera);
 		}
@@ -59,12 +59,24 @@ void PlayerControls::ProcessInputs()
 	{
 		rightMousePresses++;
 		//camera->CastRay(4.0f);
-		if (rightMousePresses == 1)
+		if (rightMousePresses == 1 && !inventoryToggle)
 		{
-			sChunk->placeBlock(camera);
+			sChunk->placeBlock(camera, selectedBlockType);
 		}
 	}
 
+	if (saveState)
+	{
+		saveState = false;
+		saveWorld(*sChunk, "saves/world.bin");
+	}
+
+	if (loadState)
+	{
+		loadState = false;
+		sChunk->~Superchunk();
+		sChunk = loadWorld("saves/world.bin");
+	}
 
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos;
@@ -88,10 +100,12 @@ void PlayerControls::ProcessInputs()
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
 	camera->SetCameraFront(glm::normalize(front));
 
 	camera->SetCameraRight();
 	camera->SetCameraUp();
 
 	camera->UpdateView();
+
 }

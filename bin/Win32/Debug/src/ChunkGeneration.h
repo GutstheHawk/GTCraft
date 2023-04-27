@@ -9,6 +9,7 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "BlockDefinitions.h"
+#include "VertexBuildingBlocks.h"
 
 #include <glm/gtc/noise.hpp>
 
@@ -16,15 +17,6 @@
 #include <fstream>
 #include <string>
 #include <cstddef>
-
-typedef glm::tvec3<GLubyte> ubyte3;
-
-#pragma pack(push, 1)
-struct Vertex {
-	ubyte3 Position;
-	ubyte3 texIndex_lightingVal_type;
-};
-#pragma pack(pop)
 
 struct Chunk 
 {
@@ -34,6 +26,9 @@ struct Chunk
 	bool changed;
 	int worldPosX;
 	int worldPosZ;
+
+	std::unordered_map<uint8_t, uint8_t>* twoSidedBlocks;
+	std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>* threeSidedBlocks;
 
 	int maxChunkVertices = (CX * CY * CZ * 6 * 6);
 	//VertexBuffer* chunkVertexBuffer;
@@ -65,6 +60,8 @@ struct Chunk
 		worldPosZ = 0;
 		glGenBuffers(1, &vbo);
 		glGenVertexArrays(1, &vao);
+
+		//fillWithAir();
 		//genIndexBuffer();
 
 		//fillWithDirt();
@@ -117,283 +114,124 @@ struct Chunk
 					if (!type)
 						continue;
 
-					// View from negative x
-					if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
+					if (twoSidedBlocks->count(type))
 					{
-						Vertex v0 = {};
-						v0.Position = ubyte3(x, y, z);
-						texIndex = { 0 };
-						lightingVal = { 153 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
+						// View from negative x
+						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
+						{
+							genNegXSide(vertexes, &x, &y, &z, type, &i);
+						}
 
-						Vertex v1 = {};
-						v1.Position = ubyte3(x, y, z + 1);
-						texIndex = { 3 };
-						lightingVal = { 153 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
 
-						Vertex v2 = {};
-						v2.Position = ubyte3(x, y + 1, z);
-						texIndex = { 1 };
-						lightingVal = { 153 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
+						// View from positive x
+						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
+						{
+							genPosXSide(vertexes, &x, &y, &z, type, &i);
+						}
 
-						Vertex v3 = {};
-						v3.Position = ubyte3(x, y + 1, z);
-						texIndex = { 1 };
-						lightingVal = { 153 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
+						// View from negative y
+						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
+						{
+							genNegYSide(vertexes, &x, &y, &z, twoSidedBlocks->at(type), &i);
+						}
 
-						Vertex v4 = {};
-						v4.Position = ubyte3(x, y, z + 1);
-						texIndex = { 3 };
-						lightingVal = { 153 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
+						// View from positive y
+						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
+						{
+							genPosYSide(vertexes, &x, &y, &z, twoSidedBlocks->at(type), &i);
+						}
 
-						Vertex v5 = {};
-						v5.Position = ubyte3(x, y + 1, z + 1);
-						texIndex = { 2 };
-						lightingVal = { 153 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
+						// View from negative z
+						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
+						{
+							genNegZSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from positive z
+						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
+						{
+							genPosZSide(vertexes, &x, &y, &z, type, &i);
+						}
+					}
+					else if (threeSidedBlocks->count(type))
+					{
+						// View from negative x
+						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
+						{
+							genNegXSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+
+
+						// View from positive x
+						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
+						{
+							genPosXSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+
+						// View from negative y
+						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
+						{
+							genNegYSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).second, &i);
+						}
+
+						// View from positive y
+						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
+						{
+							genPosYSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from negative z
+						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
+						{
+							genNegZSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+
+						// View from positive z
+						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
+						{
+							genPosZSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+					}
+					else
+					{
+						// View from negative x
+						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
+						{
+							genNegXSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+
+						// View from positive x
+						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
+						{
+							genPosXSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from negative y
+						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
+						{
+							genNegYSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from positive y
+						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
+						{
+							genPosYSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from negative z
+						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
+						{
+							genNegZSide(vertexes, &x, &y, &z, type, &i);
+						}
+
+						// View from positive z
+						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
+						{
+							genPosZSide(vertexes, &x, &y, &z, type, &i);
+						}
 					}
 
-
-					// View from positive x
-					if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
-					{
-						Vertex v0 = {};
-						v0.Position = ubyte3( x + 1, y, z );
-						texIndex = { 0 };
-						lightingVal = { 153 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
-
-						Vertex v1 = {};
-						v1.Position = ubyte3( x + 1, y + 1, z );
-						texIndex = { 1 };
-						lightingVal = { 153 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
-
-						Vertex v2 = {};
-						v2.Position = ubyte3( x + 1, y, z + 1 );
-						texIndex = { 3 };
-						lightingVal = { 153 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
-
-						Vertex v3 = {};
-						v3.Position = ubyte3( x + 1, y + 1, z );
-						texIndex = { 1 };
-						lightingVal = { 153 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
-
-						Vertex v4 = {};
-						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
-						texIndex = { 2 };
-						lightingVal = { 153 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
-
-						Vertex v5 = {};
-						v5.Position = ubyte3( x + 1, y, z + 1 );
-						texIndex = { 3 };
-						lightingVal = { 153 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
-					}
-
-					// View from negative y
-					if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
-					{
-						Vertex v0 = {};
-						v0.Position = ubyte3( x, y, z );
-						texIndex = { 0 };
-						lightingVal = { 102 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
-
-						Vertex v1 = {};
-						v1.Position = ubyte3( x + 1, y, z );
-						texIndex = { 3 };
-						lightingVal = { 102 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
-
-						Vertex v2 = {};
-						v2.Position = ubyte3( x, y, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 102 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
-
-						Vertex v3 = {};
-						v3.Position = ubyte3( x + 1, y, z );
-						texIndex = { 3 };
-						lightingVal = { 102 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
-
-						Vertex v4 = {};
-						v4.Position = ubyte3( x + 1, y, z + 1 );
-						texIndex = { 2 };
-						lightingVal = { 102 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
-
-						Vertex v5 = {};
-						v5.Position = ubyte3( x, y, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 102 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
-					}
-
-					// View from positive y
-					if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
-					{
-						Vertex v0 = {};
-						v0.Position = ubyte3( x, y + 1, z );
-						texIndex = { 0 };
-						lightingVal = { 254 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
-
-						Vertex v1 = {};
-						v1.Position = ubyte3( x, y + 1, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 254 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
-
-						Vertex v2 = {};
-						v2.Position = ubyte3( x + 1, y + 1, z );
-						texIndex = { 3 };
-						lightingVal = { 254 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
-
-						Vertex v3 = {};
-						v3.Position = ubyte3( x, y + 1, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 254 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
-
-						Vertex v4 = {};
-						v4.Position = ubyte3( x + 1, y + 1, z + 1 );
-						texIndex = { 2 };
-						lightingVal = { 254 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
-
-						Vertex v5 = {};
-						v5.Position = ubyte3( x + 1, y + 1, z );
-						texIndex = { 3 };
-						lightingVal = { 254 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
-					}
-
-					// View from negative z
-					if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
-					{
-						Vertex v0 = {};
-						v0.Position = ubyte3( x, y, z );
-						texIndex = { 0 };
-						lightingVal = { 203 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
-
-						Vertex v1 = {};
-						v1.Position = ubyte3( x, y + 1, z );
-						texIndex = { 3 };
-						lightingVal = { 203 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
-
-						Vertex v2 = {};
-						v2.Position = ubyte3( x + 1, y, z );
-						texIndex = { 1 };
-						lightingVal = { 203 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
-
-						Vertex v3 = {};
-						v3.Position = ubyte3( x, y + 1, z );
-						texIndex = { 3 };
-						lightingVal = { 203 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
-
-						Vertex v4 = {};
-						v4.Position = ubyte3( x + 1, y + 1, z );
-						texIndex = { 2 };
-						lightingVal = { 203 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
-
-						Vertex v5 = {};
-						v5.Position = ubyte3( x + 1, y, z );
-						texIndex = { 1 };
-						lightingVal = { 203 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
-					}
-
-
-					// View from positive z
-					if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
-					{
-						Vertex v0 = {};
-						v0.Position = ubyte3( x, y, z + 1 );
-						texIndex = { 0 };
-						lightingVal = { 203 };
-						v0.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v0;
-
-						Vertex v1 = {};
-						v1.Position = ubyte3( x + 1, y, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 203 };
-						v1.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v1;
-
-						Vertex v2 = {};
-						v2.Position = ubyte3( x, y + 1, z + 1 );
-						texIndex = { 3 };
-						lightingVal = { 203 };
-						v2.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v2;
-
-						Vertex v3 = {};
-						v3.Position = ubyte3( x, y + 1, z + 1 );
-						texIndex = { 3 };
-						lightingVal = { 203 };
-						v3.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v3;
-
-						Vertex v4 = {};
-						v4.Position = ubyte3( x + 1, y, z + 1 );
-						texIndex = { 1 };
-						lightingVal = { 203 };
-						v4.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v4;
-
-						Vertex v5 = {};
-						v5.Position = ubyte3( x + 1, y + 1, z + 1 );
-						texIndex = { 2 };
-						lightingVal = { 203 };
-						v5.texIndex_lightingVal_type = ubyte3(texIndex, lightingVal, type);
-						vertexes[i++] = v5;
-					}
 				}
 			}
 		}
@@ -481,7 +319,7 @@ struct Chunk
 		//chunkVA.Unbind();
 	}
 
-	void fillWithDirt()
+	void fillWithBlock(uint8_t blockType)
 	{
 		for (int x = 0; x < CX; x++)
 		{
@@ -489,7 +327,7 @@ struct Chunk
 			{
 				for (int z = 0; z < CZ; z++)
 				{
-					setBlock(x, y, z, GRASS);
+					setBlock(x, y, z, blockType);
 				}
 			}
 		}
@@ -561,20 +399,23 @@ struct Chunk
 
 	void applyHeightmap()
 	{
-		int bottomStartingHeight = (CY - 1) - 10;
+		//int bottomStartingHeight = (CY - 1) - 10;
 
 
-		for (int y = bottomStartingHeight; y < CY; y++)
+		for (int y = 0; y < CY; y++)
 		{
 			for (int x = 0; x < CX; x++)
 			{
 				for (int z = 0; z < CZ; z++)
 				{
 					//std::cout << heightmap[x][z] << std::endl;
-					setBlock(x, y, z, 0);
-					if (heightmap[x][z] >= (y - bottomStartingHeight))
+					if (y < heightmap[x][z])
 					{
-						setBlock(x, y, z, 1);
+						setBlock(x, y, z, DIRT);
+					}
+					if (y == heightmap[x][z])
+					{
+						setBlock(x, y, z, GRASS);
 					}
 				}
 			}
@@ -590,49 +431,5 @@ struct Chunk
 			}
 	}
 
-	/*void genPosXSide(int* x, int* y, int* z, uint8_t* type, int* i)
-	{
-		Vertex v0 = {};
-		v0.Position = byte3(*x, *y, *z);
-		v0.texIndex = { 0 };
-		v0.lightingVal = { 0 };
-		v0.type = *type;
-		vertexes[*i++] = v0;
-
-		Vertex v1 = {};
-		v1.Position = byte3(*x, *y, *z + 1);
-		v1.texIndex = { 1 };
-		v1.lightingVal = { 0 };
-		v1.type = *type;
-		vertexes[*i++] = v1;
-
-		Vertex v2 = {};
-		v2.Position = byte3(*x, *y + 1, *z);
-		v2.texIndex = { 3 };
-		v2.lightingVal = { 0 };
-		v2.type = *type;
-		vertexes[*i++] = v2;
-
-		Vertex v3 = {};
-		v3.Position = byte3(*x, *y + 1, *z);
-		v3.texIndex = { 3 };
-		v3.lightingVal = { 0 };
-		v3.type = *type;
-		vertexes[*i++] = v3;
-
-		Vertex v4 = {};
-		v4.Position = byte3(*x, *y, *z + 1);
-		v4.texIndex = { 1 };
-		v4.lightingVal = { 0 };
-		v4.type = *type;
-		vertexes[*i++] = v4;
-
-		Vertex v5 = {};
-		v5.Position = byte3(*x, *y + 1, *z + 1);
-		v5.texIndex = { 2 };
-		v5.lightingVal = { 0 };
-		v5.type = *type;
-		vertexes[*i++] = v5;
-	}*/
 };
 

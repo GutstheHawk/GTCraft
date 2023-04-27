@@ -61,7 +61,7 @@ void PlayerControls::ProcessInputs()
 		//camera->CastRay(4.0f);
 		if (rightMousePresses == 1)
 		{
-			sChunk->breakBlock(camera);
+			sChunk->placeBlock(camera);
 		}
 	}
 

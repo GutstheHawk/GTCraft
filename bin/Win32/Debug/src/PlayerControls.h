@@ -8,6 +8,8 @@ public:
 	Camera* camera;
 	Superchunk* sChunk;
 
+	uint8_t selectedBlockType = DIRT;
+
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;
 	bool S_PRESSED = false;

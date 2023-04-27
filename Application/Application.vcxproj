@@ -102,8 +102,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>2048</StackReserveSize>
-      <StackCommitSize>2048</StackCommitSize>
+      <StackReserveSize>4096</StackReserveSize>
+      <StackCommitSize>4096</StackCommitSize>
+      <HeapReserveSize>4096</HeapReserveSize>
+      <HeapCommitSize>4096</HeapCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,8 +127,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>2048</StackReserveSize>
-      <StackCommitSize>2048</StackCommitSize>
+      <StackReserveSize>4096</StackReserveSize>
+      <StackCommitSize>4096</StackCommitSize>
+      <HeapReserveSize>4096</HeapReserveSize>
+      <HeapCommitSize>4096</HeapCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -144,8 +148,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>2048</StackReserveSize>
-      <StackCommitSize>2048</StackCommitSize>
+      <StackReserveSize>4096</StackReserveSize>
+      <StackCommitSize>4096</StackCommitSize>
+      <HeapReserveSize>4096</HeapReserveSize>
+      <HeapCommitSize>4096</HeapCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,8 +173,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>2048</StackReserveSize>
-      <StackCommitSize>2048</StackCommitSize>
+      <StackReserveSize>4096</StackReserveSize>
+      <StackCommitSize>4096</StackCommitSize>
+      <HeapReserveSize>4096</HeapReserveSize>
+      <HeapCommitSize>4096</HeapCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -180,6 +188,13 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
@@ -190,8 +205,10 @@
     <ClInclude Include="src\ChunkGeneration.h" />
     <ClInclude Include="src\GL_Debug.h" />
     <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\Inventory.h" />
     <ClInclude Include="src\PlayerControls.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\SaveAndLoad.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Superchunk.h" />
     <ClInclude Include="src\Texture.h" />
@@ -484,18 +501,28 @@
     <ClInclude Include="src\vendor\glm\vec3.hpp" />
     <ClInclude Include="src\vendor\glm\vec4.hpp" />
     <ClInclude Include="src\vendor\glm\vector_relational.hpp" />
+    <ClInclude Include="src\vendor\imgui\imconfig.h" />
+    <ClInclude Include="src\vendor\imgui\imgui.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />
+    <ClInclude Include="src\VertexBuildingBlocks.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="res\shaders\atlasFragmentShader.shader" />
+    <None Include="res\shaders\uiFragmentShader.shader" />
     <None Include="res\shaders\chunkFragmentShader.shader" />
     <None Include="res\shaders\chunkVertexShader.shader" />
     <None Include="res\shaders\fragmentShaderBasic.shader" />
-    <None Include="res\shaders\atlasVertexShader.shader" />
+    <None Include="res\shaders\uiVertexShader.shader" />
     <None Include="res\shaders\RayFragment.shader" />
     <None Include="res\shaders\RayVertex.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />

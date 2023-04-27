@@ -46,8 +46,8 @@ private:
     glm::vec3 cameraUp = glm::vec3(0.0f, 0.0f, .0f);
     glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     
-    float yaw = -90.0f;
-    float pitch = 0.0f;
+    float yaw;
+    float pitch;
     float cameraSpeed = 0.0f;
 
     Shader* rayShader;

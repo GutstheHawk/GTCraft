@@ -30,6 +30,14 @@
 //	Vertex v0;
 //}
 
+#pragma pack(push, 1)
+struct UIVertex
+{
+	glm::vec2 positions;
+	glm::uvec2 texCoord_Type;
+};
+#pragma pack(pop)
+
 int main(void)
 {
 
@@ -43,10 +51,13 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 	const int windowWidth = 1280;
 	const int windowHeight = 720;
+	//const int windowWidth = 1920;
+	//const int windowHeight = 1080;
+
 	const char* windowTitle = "GALINT: MC Clone";
 
 	GLFWwindow* window;
@@ -80,42 +91,8 @@ int main(void)
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	float positions[] = {
-		//front
-		-1.0, -1.0,  1.0, 0.0, 0.0, //0 bottom-left
-		 1.0, -1.0,  1.0, 1.0, 0.0, //1 bottom-right
-		 1.0,  1.0,  1.0, 1.0, 1.0, //2 top-right
-		-1.0,  1.0,  1.0, 0.0, 1.0, //3 top-left
-		//top
-		-1.0,  1.0,  1.0, 0.0, 0.0, //4
-		 1.0,  1.0,  1.0, 1.0, 0.0, //5
-		 1.0,  1.0, -1.0, 1.0, 1.0, //6
-		-1.0,  1.0, -1.0, 0.0, 1.0, //7
-		//back
-		 1.0, -1.0, -1.0, 0.0, 0.0, //8
-		-1.0, -1.0, -1.0, 1.0, 0.0, //9
-		-1.0,  1.0, -1.0, 1.0, 1.0, //10
-		 1.0,  1.0, -1.0, 0.0, 1.0, //11
-		//bottom
-		-1.0, -1.0, -1.0, 0.0, 0.0, //12
-		 1.0, -1.0, -1.0, 1.0, 0.0, //13
-		 1.0, -1.0,  1.0, 1.0, 1.0, //14
-		-1.0, -1.0,  1.0, 0.0, 1.0, //15
-		//left
-		-1.0, -1.0, -1.0, 0.0, 0.0, //16
-		-1.0, -1.0,  1.0, 1.0, 0.0, //17
-		-1.0,  1.0,  1.0, 1.0, 1.0, //18
-		-1.0,  1.0, -1.0, 0.0, 1.0, //19
-		//right
-		 1.0, -1.0,  1.0, 0.0, 0.0, //20
-		 1.0, -1.0, -1.0, 1.0, 0.0, //21
-		 1.0,  1.0, -1.0, 1.0, 1.0, //22
-		 1.0,  1.0,  1.0, 0.0, 1.0  //23
-
-	};
-
-	float skyboxVertices[] = {
-		// positions          
+	float skyboxVertices[] = {         
+		// Front face
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -163,7 +140,7 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	////Skybox vertex buffer, vertex array, and index buffer
-	VertexBuffer skyboxVB(positions, 3 * 36 * sizeof(float), GL_STATIC_DRAW);
+	VertexBuffer skyboxVB(skyboxVertices, 3 * 36 * sizeof(float), GL_STATIC_DRAW);
 
 	VertexBufferLayout skyboxLayout;
 	skyboxLayout.Push<float>(3, GL_FALSE);
@@ -172,7 +149,6 @@ int main(void)
 	skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
 	skyboxVA.Bind();
 	skyboxVA.Unbind();
-
 
 	//Atlas vertex buffer, vertex array, and index buffer GL_DYNAMIC_DRAW 24 * 16 * 16 * 16 * sizeof(Vertex)
 	/*VertexBuffer atlasVB(nullptr, 24 * 16 * 16 * 16 * sizeof(Vertex), GL_DYNAMIC_DRAW);
@@ -203,8 +179,8 @@ int main(void)
 	Camera* cam = new Camera();
 	cam->SetRayShader(&rayShader);
 	cam->SetWorldShader(&atlasShader);
-	glm::vec3 mapCenter = glm::vec3(((SCX / 2) - 1) * 16, (SCX - 2) * 16, ((SCZ / 2) - 1) * 16);
-	//cam->Teleport(mapCenter);
+	glm::vec3 mapCenter = glm::vec3((SCX * 16) / 2, SCY * 16, (SCZ * 16) / 2);
+	cam->Teleport(mapCenter);
 
 	Superchunk* sChunk = new Superchunk;
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
@@ -236,6 +212,31 @@ int main(void)
 
 	Texture skyboxTexture(0);
 	skyboxTexture.loadCubemap(faces);
+
+
+	Shader uiShader("res/shaders/uiVertexShader.shader", "res/shaders/uiFragmentShader.shader");
+
+	UIVertex* uiVertices = new UIVertex[6];
+
+	float blockUIWidth = (-1.0f + (1.0f / 4.0f));
+	float blockUIHeight = (-1.0f + (1.0f / 4.0f));
+
+	uiVertices[0] = UIVertex{ glm::vec2{-1.0f, -1.0f},				 glm::uvec2{0, pc->selectedBlockType} };
+	uiVertices[1] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+	uiVertices[2] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+	uiVertices[3] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+	uiVertices[4] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+	uiVertices[5] = UIVertex{ glm::vec2{blockUIWidth,blockUIHeight}, glm::uvec2{2, pc->selectedBlockType} };
+
+	VertexBuffer uiVB(uiVertices, 6 * sizeof(UIVertex), GL_STATIC_DRAW);
+
+	VertexBufferLayout uiLayout;
+	uiLayout.Push<float>(2, GL_FALSE);
+	uiLayout.Push<unsigned int>(2, GL_FALSE);
+
+	VertexArray uiVA;
+	uiVA.AddBuffer(uiVB, uiLayout);
+
 
 	//Time
 	float deltaTime = 0.0f;
@@ -280,23 +281,23 @@ int main(void)
 		glm::mat4 view = cam->ReturnView();
 		glm::mat4 model = cam->ReturnModel();
 
-		atlasShader.Unbind();
+		//atlasShader.Unbind();
 
-		glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
-		skyboxShader.Bind();
-		//glUseProgram(skyboxShader);
-		glm::mat4 sbView = glm::mat4(glm::mat3(cam->ReturnUpdatedView())); // remove translation from the view matrix
-		skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
-		skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
-		// skybox cube
-		skyboxVA.Bind();
-		skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		skyboxVA.Unbind();
-		glDepthMask(GL_TRUE);; // set depth function back to default
-		skyboxShader.Unbind();
+		//glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
+		//skyboxShader.Bind();
+		////glUseProgram(skyboxShader);
+		////glm::mat4 sbProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
+		//glm::mat4 sbView = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
+		//skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
+		//skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
+		//// skybox cube
+		//skyboxVA.Bind();
+		//skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		//skyboxVA.Unbind();
+		//glDepthMask(GL_TRUE);; // set depth function back to default
+		//skyboxShader.Unbind();
 
-		atlasShader.Bind();
 		/*atlasShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
 		atlasShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &view[0][0]);
 		atlasShader.SetUniformMatrix4fv("model", 1, GL_FALSE, &model[0][0]);*/
@@ -305,41 +306,24 @@ int main(void)
 		//atlasShader.SetUniformMatrix4fv("pvm", 1, GL_FALSE, &pvm[0][0]);
 
 		//startingChunk.render();
+		atlasShader.Bind();
+		sChunk->render(cam, &atlasShader);
+		atlasShader.Unbind();
 
-		//atlasVA.Bind();
+		//glDisable(GL_DEPTH_TEST);
+		//uiShader.Bind();
+		//texture.Bind(GL_TEXTURE_2D, 0);
+		//uiShader.SetUniform1i("u_Texture", 0);
 
-		//sChunk->render(cam, &atlasShader);
+		//GLuint currentProgram;
+		//glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&currentProgram);
+		////std::cout << "Current Shader ID: " << currentProgram << std::endl;
 
-		//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-		/*for (unsigned int y = 0; y < 16; y++)
-		{
-			if (y > 14)
-			{
-				atlasShader.SetUniform2f("v_atlasIndexes", 0.0f, 15.0f);
-			}
-			else if (y < 3)
-			{
-				atlasShader.SetUniform2f("v_atlasIndexes", 1.0f, 15.0f);
-			}
-			else
-			{
-				atlasShader.SetUniform2f("v_atlasIndexes", 2.0f, 15.0f);
-			}
-			for (unsigned int z = 0; z < 16; z++)
-			{
-				for (unsigned int x = 0; x < 16; x++)
-				{
-					cam->ModelTransform(glm::vec3(x * 2.0f, y * 2.0f, z * 2.0f));
-					model = cam->ReturnModel();
-					atlasShader.SetUniformMatrix4fv("model", 1, GL_FALSE, &model[0][0]);
-					glDrawElements(GL_TRIANGLES, size / sizeof(GLfloat), GL_UNSIGNED_INT, nullptr);
-				}
-			}
-		}*/
-		//atlasVA.Unbind();
-		//Resets Model matrix to world origin - Identity Matrix
-		//cam->ResetModel();
+		//uiVA.Bind();
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		//uiVA.Unbind(); // set depth function back to default
+		//uiShader.Unbind();
+		//glEnable(GL_DEPTH_TEST);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
