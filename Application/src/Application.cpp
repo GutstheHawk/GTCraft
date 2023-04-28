@@ -59,8 +59,8 @@ int main(void)
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	const int windowWidth = 1280;
-	const int windowHeight = 720;
+	const int windowWidth = 1920;
+	const int windowHeight = 1080;
 	//const int windowWidth = 1920;
 	//const int windowHeight = 1080;
 
@@ -188,7 +188,31 @@ int main(void)
 	glm::vec3 mapCenter = glm::vec3((SCX * 16) / 2, 3 * 16, (SCZ * 16) / 2);
 	cam->Teleport(mapCenter);
 
-	Superchunk* sChunk = new Superchunk;
+	std::string input;
+	std::cout << "Enter a world seed: ";
+	std::cin >> input;
+	int seed = std::stoi(input);
+
+	Superchunk* sChunk = new Superchunk(seed);
+
+	std::cout << "Do you want to fill the world with lava? [YES or NO]: ";
+	std::cin >> input;
+
+	if (input == "YES")
+	{
+		sChunk->applyHeightmap(GRANITE, GRANITE);
+		sChunk->addWaterToWorld();
+	}
+	else if (input == "maybe")
+	{
+		sChunk->addWaterToWorld();
+		sChunk->placeTreesInWorld();
+	}
+	else
+	{
+		sChunk->placeTreesInWorld();
+	}
+
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
 	glfwSetWindowUserPointer(window, pc);
 
@@ -282,13 +306,6 @@ int main(void)
 	//printChunk(chunk);
 	
 	//sChunk.fillSuperchunk();
-
-	std::string input;
-	std::cout << "Enter a world seed: ";
-	std::cin >> input;
-	int seed = std::stoi(input);
-
-	sChunk->worldSeed = seed;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))

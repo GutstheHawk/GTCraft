@@ -1,6 +1,6 @@
 #pragma once
 #define SCX 16
-#define SCY 7
+#define SCY 5
 #define SCZ 16
 
 #include <GL/glew.h>
@@ -36,8 +36,10 @@ struct Superchunk
 
     std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
     std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
-    Superchunk()
+    Superchunk(int seed)
     {
+        worldSeed = seed;
+
         twoSidedBlocks = std::make_shared<std::unordered_map<uint8_t, uint8_t>>();
         threeSidedBlocks = std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>();
 
@@ -87,8 +89,8 @@ struct Superchunk
         //fillSuperchunk();
         generateSuperchunkHeightmap(static_cast<float>(worldSeed));
         //setChunkHeightMaps();
-        applyHeightmap();
-        placeTreesInWorld();
+        applyHeightmap(DIRT, GRASS);
+        //placeTreesInWorld();
         //addWaterToWorld();
     }
 
@@ -141,8 +143,8 @@ struct Superchunk
         glm::vec3 rayOrigin = rayVecs.first;
         glm::vec3 rayEnd = rayVecs.second;
 
-        std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
-        std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
+        //std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
+        //std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
 
         std::vector<std::pair<glm::ivec3, float>> intersectedCubes;
 
@@ -162,9 +164,9 @@ struct Superchunk
         }
         //unsigned int chunkPosZ = static_cast<int>(glm::mod(rayOrigin.z, 16.0f));
 
-        std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
-        std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
-        std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
+        //std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
+        //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
+        //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
         // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
@@ -177,7 +179,7 @@ struct Superchunk
         if (!intersectedCubes.empty())
         {
             glm::ivec3 closestCube = intersectedCubes.front().first;
-            std::cout << "Closest Cube World Coords: " << to_string(closestCube) << std::endl;
+            //std::cout << "Closest Cube World Coords: " << to_string(closestCube) << std::endl;
 
             setWorldBlock(closestCube.x, closestCube.y, closestCube.z, 0);
         }
@@ -232,8 +234,8 @@ struct Superchunk
         glm::vec3 rayOrigin = rayVecs.first;
         glm::vec3 rayEnd = rayVecs.second;
 
-        std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
-        std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
+        //std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
+        //std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
 
         std::vector<std::pair<glm::ivec3, float>> intersectedCubes;
 
@@ -251,9 +253,9 @@ struct Superchunk
         }
         //unsigned int chunkPosZ = static_cast<int>(glm::mod(rayOrigin.z, 16.0f));
 
-        std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
-        std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
-        std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
+        //std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
+        //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
+        //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
         // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
@@ -513,7 +515,7 @@ struct Superchunk
             }
     }*/
     
-    void applyHeightmap()
+    void applyHeightmap(uint8_t groundType, uint8_t surfaceType)
     {
         int heightmapOffset = heightmapStartingChunk * CY;
 
@@ -534,11 +536,11 @@ struct Superchunk
 
                             if (y < (heightmapOffset + heightmap[worldX][worldZ]))
                             {
-                                setWorldBlock(worldX, y, worldZ, DIRT);
+                                setWorldBlock(worldX, y, worldZ, groundType);
                             }
                             if (y == (heightmapOffset + heightmap[worldX][worldZ]))
                             {
-                                setWorldBlock(worldX, y, worldZ, GRASS);
+                                setWorldBlock(worldX, y, worldZ, surfaceType);
                             }
                         }
                     }
@@ -632,7 +634,7 @@ struct Superchunk
 
                             if (y > (heightmapOffset + heightmap[worldX][worldZ]) && y < waterLevel)
                             {
-                                setWorldBlock(worldX, y, worldZ, WATER);
+                                setWorldBlock(worldX, y, worldZ, LAVA);
                             }
                         }
                     }

@@ -18,9 +18,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		{
 			pc->inventoryToggle = false;
 
-			pc->camera->SetCameraPosition(pc->cachedCameraPos);
-			pc->camera->SetCameraFront(pc->cachedCameraFront);
-			pc->camera->SetCameraUp(pc->cachedCameraUp);
+			//pc->camera->SetCameraPosition(pc->cachedCameraPos);
+			//pc->camera->SetCameraFront(pc->cachedCameraFront);
+			//pc->camera->SetCameraUp(pc->cachedCameraUp);
 
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -33,13 +33,43 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-			pc->cachedCameraPos = pc->camera->GetCameraPosition();
-			pc->cachedCameraFront = pc->camera->GetCameraFront();
-			pc->cachedCameraUp = pc->camera->GetCameraUp();
+			//pc->cachedCameraPos = pc->camera->GetCameraPosition();
+			//pc->cachedCameraFront = pc->camera->GetCameraFront();
+			//pc->cachedCameraUp = pc->camera->GetCameraUp();
 		}
 
 	}
 
+
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+		pc->selectedBlockType = DIRT;
+
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+		pc->selectedBlockType = OAKLOG;
+
+	if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+		pc->selectedBlockType = OAKPLANK;
+
+	if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+		pc->selectedBlockType = REDBRICK;
+
+	if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+		pc->selectedBlockType = PUMPKINTOP;
+
+	if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+		pc->selectedBlockType = MARBLESIDE;
+
+	if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+		pc->selectedBlockType = STONEBRICK;
+
+	if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+		pc->selectedBlockType = LAPISBLOCK;
+
+	if (key == GLFW_KEY_9 && action == GLFW_PRESS)
+		pc->selectedBlockType = LEAVES;
+
+	if (key == GLFW_KEY_0 && action == GLFW_PRESS)
+		pc->selectedBlockType = SPONGE;
 
     //Main Keys
     //if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))

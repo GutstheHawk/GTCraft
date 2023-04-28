@@ -102,10 +102,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>4096</StackReserveSize>
-      <StackCommitSize>4096</StackCommitSize>
-      <HeapReserveSize>4096</HeapReserveSize>
-      <HeapCommitSize>4096</HeapCommitSize>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,8 +125,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>4096</StackReserveSize>
-      <StackCommitSize>4096</StackCommitSize>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
       <HeapReserveSize>4096</HeapReserveSize>
       <HeapCommitSize>4096</HeapCommitSize>
     </Link>
@@ -148,10 +146,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>4096</StackReserveSize>
-      <StackCommitSize>4096</StackCommitSize>
-      <HeapReserveSize>4096</HeapReserveSize>
-      <HeapCommitSize>4096</HeapCommitSize>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -173,10 +169,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glew-2.2.0\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022\</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <StackReserveSize>4096</StackReserveSize>
-      <StackCommitSize>4096</StackCommitSize>
-      <HeapReserveSize>4096</HeapReserveSize>
-      <HeapCommitSize>4096</HeapCommitSize>
+      <StackReserveSize>2048</StackReserveSize>
+      <StackCommitSize>2048</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -216,9 +210,8 @@
     <ClInclude Include="src\UserInputsRotateObject.h" />
     <ClInclude Include="src\vendor\cereal\archives\binary.hpp" />
     <ClInclude Include="src\vendor\cereal\cereal.hpp" />
-    <ClInclude Include="src\vendor\cereal\types\array.hpp" />
     <ClInclude Include="src\vendor\cereal\types\memory.hpp" />
-    <ClInclude Include="src\vendor\cereal\types\vector.hpp" />
+    <ClInclude Include="src\vendor\cereal\types\unordered_map.hpp" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />
@@ -522,12 +515,13 @@
     <ClInclude Include="src\VertexBuildingBlocks.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="imgui.ini" />
     <None Include="packages.config" />
-    <None Include="res\shaders\uiFragmentShader.shader" />
+    <None Include="res\shaders\atlasFragmentShader.shader" />
     <None Include="res\shaders\chunkFragmentShader.shader" />
     <None Include="res\shaders\chunkVertexShader.shader" />
     <None Include="res\shaders\fragmentShaderBasic.shader" />
-    <None Include="res\shaders\uiVertexShader.shader" />
+    <None Include="res\shaders\atlasVertexShader.shader" />
     <None Include="res\shaders\RayFragment.shader" />
     <None Include="res\shaders\RayVertex.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
