@@ -16,14 +16,26 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	{
 		if (pc->inventoryToggle == true)
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			pc->inventoryToggle = false;
+
+			pc->camera->SetCameraPosition(pc->cachedCameraPos);
+			pc->camera->SetCameraFront(pc->cachedCameraFront);
+			pc->camera->SetCameraUp(pc->cachedCameraUp);
+
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
 
 		}
 		else if (pc->inventoryToggle == false)
 		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			pc->inventoryToggle = true;
+
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+			pc->cachedCameraPos = pc->camera->GetCameraPosition();
+			pc->cachedCameraFront = pc->camera->GetCameraFront();
+			pc->cachedCameraUp = pc->camera->GetCameraUp();
 		}
 
 	}

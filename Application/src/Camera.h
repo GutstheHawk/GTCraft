@@ -34,17 +34,16 @@ static std::string to_string(const glm::ivec3& v)
 
 class Camera
 {
-private:
+public:
     glm::mat4 Projection;
     glm::mat4 View;
     glm::mat4 Model;
 
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-
-    glm::vec3 cameraRight = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraUp = glm::vec3(0.0f, 0.0f, .0f);
-    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraPos;
+    glm::vec3 cameraFront;
+    glm::vec3 cameraRight;
+    glm::vec3 cameraUp;
+    glm::vec3 worldUp;
     
     float yaw;
     float pitch;
@@ -67,10 +66,13 @@ public:
     void Rotate(glm::vec2 const& Rotate);
     void ModelTransform(glm::vec3 translationVector);
 
-    void SetCameraSpeed(float deltaTime);
+    void SetCameraPosition(glm::vec3 camPos);
     void SetCameraFront(glm::vec3 camFront);
+    void SetCameraUp(glm::vec3 camUp);
+
+    void SetCameraSpeed(float deltaTime);
     void SetCameraRight();
-    void SetCameraUp();
+    void UpdateCameraUp();
     void UpdateView();
     glm::mat4 ReturnUpdatedView();
 
@@ -85,6 +87,10 @@ public:
 	glm::mat4 ReturnView();
 	glm::mat4 ReturnModel();
 	glm::mat4 ReturnPVM();
+
+    glm::vec3 GetCameraPosition();
+    glm::vec3 GetCameraFront();
+    glm::vec3 GetCameraUp();
 
 };
 

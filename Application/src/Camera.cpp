@@ -3,10 +3,16 @@
 Camera::Camera()
 	: Projection(glm::perspective(glm::radians(95.0f), 16.0f / 9.0f, 0.1f, 150.f)),
 	View(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f))),
-	Model(glm::mat4(1.0f)), cameraRight(glm::vec3(0.0f, 0.0f, 0.0f)), cameraUp(glm::vec3(0.0f, 0.0f, 0.0f))
+	Model(glm::mat4(1.0f))
 	//glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f))
 {
-	yaw = 0.0f;
+	cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	cameraUp = glm::vec3{ 0.0f, 1.0f, 0.0f };
+	cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
+	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	/*yaw = 0.0f;
 	pitch = 0.0f;
 
 	glm::vec3 front;
@@ -17,8 +23,8 @@ Camera::Camera()
 	SetCameraFront(glm::normalize(front));
 
 	SetCameraRight();
-	SetCameraUp();
-	UpdateView();
+	UpdateCameraUp();
+	UpdateView();*/
 }
 
 Camera::~Camera()
@@ -118,10 +124,11 @@ void Camera::ModelTransform(glm::vec3 translationVector)
 	Model = Trans;
 }
 
+
 // Set camera parameters
-void Camera::SetCameraSpeed(float deltaTime)
+void Camera::SetCameraPosition(glm::vec3 camPos)
 {
-	cameraSpeed = 8 * deltaTime;
+	cameraPos = camPos;
 }
 
 void Camera::SetCameraFront(glm::vec3 camFront)
@@ -129,19 +136,29 @@ void Camera::SetCameraFront(glm::vec3 camFront)
 	cameraFront = camFront;
 }
 
-void Camera::SetCameraRight()
+void Camera::SetCameraUp(glm::vec3 camUp)
 {
-	cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
+	cameraUp = camUp;
 }
 
-void Camera::SetCameraUp()
+void Camera::SetCameraSpeed(float deltaTime)
+{
+	cameraSpeed = 8 * deltaTime;
+}
+
+void Camera::SetCameraRight()
+{
+	cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
+}
+
+void Camera::UpdateCameraUp()
 {
 	cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
 }
 
 void Camera::UpdateView()
 {
-	View = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	View = glm::lookAt(cameraPos, cameraPos + cameraFront, worldUp);
 }
 
 glm::mat4 Camera::ReturnUpdatedView()
@@ -164,12 +181,12 @@ void Camera::MoveBackward()
 
 void Camera::StrafeLeft()
 {
-	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	cameraPos -= glm::normalize(glm::cross(cameraFront, worldUp)) * cameraSpeed;
 }
 
 void Camera::StrafeRight()
 {
-	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	cameraPos += glm::normalize(glm::cross(cameraFront, worldUp)) * cameraSpeed;
 }
 
 void Camera::MoveUpward()
@@ -205,4 +222,18 @@ glm::mat4 Camera::ReturnPVM()
 	return Projection * View * Model;
 }
 
+glm::vec3 Camera::GetCameraPosition()
+{
+	return cameraPos;
+}
+
+glm::vec3 Camera::GetCameraFront()
+{
+	return cameraFront;
+}
+
+glm::vec3 Camera::GetCameraUp()
+{
+	return cameraUp;
+}
 

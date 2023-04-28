@@ -11,10 +11,16 @@ public:
 
 	uint8_t selectedBlockType = DIRT;
 
+	glm::vec3 cachedCameraPos = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 cachedCameraFront = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 cachedCameraUp = { 0.0f, 0.0f, 0.0f };
+
 	bool saveState = 0;
 	bool loadState = 0;
 
 	bool inventoryToggle = false;
+	//float cachedXPos = 0.0f;
+	//float cachedYPos = 0.0f;
 
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;
@@ -33,7 +39,7 @@ public:
 	bool RIGHT_MOUSE_PRESSED = false;
 	unsigned int rightMousePresses = 0;
 
-	float pitch = -90.0f;
+	float pitch = 0.0f;
 	float yaw = 0.0f;
 
 	float xpos = 0.0f;
@@ -42,7 +48,7 @@ public:
 	float lastY = 0.0f;
 
 	PlayerControls(Camera*, Superchunk* sChunk);
-	~PlayerControls();
+	//~PlayerControls();
 	void ProcessInputs();
 };
 

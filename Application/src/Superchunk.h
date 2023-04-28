@@ -13,8 +13,12 @@
 #include <glm/gtc/noise.hpp>
 #include <glm/gtc/random.hpp>
 #include <glm/glm.hpp>
-#include <cmath>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/unordered_map.hpp>
+
+#include <cmath>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -24,63 +28,90 @@
 
 struct Superchunk
 {
-	Chunk* sChunk[SCX][SCY][SCZ];
-    int8_t** heightmap;
+    std::unique_ptr<Chunk> sChunk[SCX][SCY][SCZ];
+    std::unique_ptr<int8_t* []> heightmap;
+
+    int worldSeed;
     int heightmapStartingChunk;
 
-    std::unordered_map<uint8_t, uint8_t> twoSidedBlocks;
-    std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>> threeSidedBlocks;
+    std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
+    std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
+    Superchunk()
+    {
+        twoSidedBlocks = std::make_shared<std::unordered_map<uint8_t, uint8_t>>();
+        threeSidedBlocks = std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>();
 
-	Superchunk()
-	{
-		memset(sChunk, 0, sizeof sChunk);
+        // Allocate memory for sChunk using std::make_unique
+        for (int x = 0; x < SCX; x++) {
+            for (int y = 0; y < SCY; y++) {
+                for (int z = 0; z < SCZ; z++) {
 
-        heightmap = new int8_t * [SCX * 16];
+                    sChunk[x][y][z] = std::make_unique<Chunk>();
+
+                    if (y == 0 || y == 1)
+                    {
+                        sChunk[x][y][z]->fillWithBlock(STONE);
+                    }
+                    if (y > 1)
+                    {
+                        sChunk[x][y][z]->fillWithAir();
+                    }
+
+                    sChunk[x][y][z]->worldPosX = x;
+                    sChunk[x][y][z]->worldPosZ = z;
+
+                    sChunk[x][y][z]->twoSidedBlocks = twoSidedBlocks;
+                    sChunk[x][y][z]->threeSidedBlocks = threeSidedBlocks;
+                }
+            }
+        }
+
+
+        // Allocate memory for heightmap using std::make_unique
+        heightmap = std::make_unique<int8_t* []>(SCX * 16);
         for (int i = 0; i < (SCX * 16); i++) {
             heightmap[i] = new int8_t[SCZ * 16];
         }
 
-        twoSidedBlocks = {
-            {OAKLOG, OAKLOGTOP}
-        };
+        twoSidedBlocks->insert({ OAKLOG, OAKLOGTOP });
+        twoSidedBlocks->insert({ MARBLESIDE, MARBLETOP });
+        twoSidedBlocks->insert({ MELONTOP, MELONSIDE });
 
-        threeSidedBlocks = {
-            {GRASS, std::make_pair(GRASSSIDE, DIRT)}
-        };
+        threeSidedBlocks->insert({ GRASS, std::make_pair(GRASSSIDE, DIRT) });
+        threeSidedBlocks->insert({ CACTUSTOP, std::make_pair(CACTUSSIDE, CACTUSBOTTOM) });
+        threeSidedBlocks->insert({ PUMPKINTOP, std::make_pair(JACKOLANTERNLIT, PUMPKINSIDE) });
 
+        worldSeed = 0;
         heightmapStartingChunk = 2;
 
-        fillSuperchunk();
-        generateSuperchunkHeightmap(42.0f);
-        setChunkHeightMaps();
-        applyHeightmaps();
+        //fillSuperchunk();
+        generateSuperchunkHeightmap(static_cast<float>(worldSeed));
+        //setChunkHeightMaps();
+        applyHeightmap();
         placeTreesInWorld();
-        
-        //generateHightmap();
-        //applyHightmap();
-	}
+        //addWaterToWorld();
+    }
 
-	~Superchunk()
-	{
-        for (int i = 0; i < (SCX * 16); i++) {
-            delete[] heightmap[i];
-        }
-        delete[] heightmap;
+    template <class Archive>
+    void serialize(cereal::BinaryOutputArchive& archive, Superchunk& superchunk)
+    {
+        archive(superchunk.sChunk, superchunk.heightmap, superchunk.heightmapStartingChunk,
+            superchunk.twoSidedBlocks, superchunk.threeSidedBlocks);
+    }
 
-        for (int i = 0; i < SCX; i++) {
-            for (int j = 0; j < SCY; j++) {
-                for (int k = 0; k < SCZ; k++) {
-                    if (sChunk[i][j][k] != nullptr) {
-                        delete sChunk[i][j][k];
-                    }
-                }
-            }
-        }
-		/*for (int x = 0; x < SCX; x++)
-			for (int y = 0; y < SCX; y++)
-				for (int z = 0; z < SCX; z++)
-					delete sChunk[x][y][z];*/
-	}
+    /*template<class Archive>
+    void serialize(Archive& archive)
+    {
+        std::unique_ptr<Chunk> sChunk[SCX][SCY][SCZ];
+        std::unique_ptr<int8_t* []> heightmap;
+        int heightmapStartingChunk;
+        std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
+        std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
+
+        archive(sChunk, heightmap, heightmapStartingChunk, twoSidedBlocks, threeSidedBlocks);
+
+        construct(std::move(sChunk), std::move(heightmap), heightmapStartingChunk, std::move(twoSidedBlocks), std::move(threeSidedBlocks));
+    }*/
 
     enum CubeFace {
         PositiveX,
@@ -155,8 +186,8 @@ struct Superchunk
     void searchChunkForCube(std::vector<std::pair<glm::ivec3, float>>& intersectedCubes,
         glm::ivec3 chunkWorldPos, glm::vec3 rayOrigin, glm::vec3 rayEnd)
     {
-        Chunk* playerChunk = sChunk[chunkWorldPos.x][chunkWorldPos.y][chunkWorldPos.z];
-        uint8_t*** chunkBlocks = playerChunk->blocks;
+        Chunk* playerChunk = sChunk[chunkWorldPos.x][chunkWorldPos.y][chunkWorldPos.z].get();
+        auto& chunkBlocks = playerChunk->blocks;
 
         for (int x = 0; x < CX; x++)
         {
@@ -336,8 +367,8 @@ struct Superchunk
         y %= CY;
         z %= CZ;
 
-        if (!sChunk[cx][cy][cz])
-            sChunk[cx][cy][cz] = new Chunk();
+        //if (!sChunk[cx][cy][cz])
+            //sChunk[cx][cy][cz] = new Chunk();
 
         sChunk[cx][cy][cz]->setBlock(x, y, z, type);
     }
@@ -359,7 +390,7 @@ struct Superchunk
                     }
     }
 
-    void fillSuperchunk()
+    /*void fillSuperchunk()
     {
         for (int x = 0; x < SCX; x++)
             for (int y = 0; y < SCY; y++)
@@ -381,12 +412,12 @@ struct Superchunk
                         chunk->worldPosX = x;
                         chunk->worldPosZ = z;
 
-                        chunk->twoSidedBlocks = &twoSidedBlocks;
-                        chunk->threeSidedBlocks = &threeSidedBlocks;
+                        chunk->twoSidedBlocks = twoSidedBlocks;
+                        chunk->threeSidedBlocks = threeSidedBlocks;
 
                         sChunk[x][y][z] = chunk;
                     }
-    }
+    }*/
 
     void generateSuperchunkHeightmap(float inSeed)
     {
@@ -449,19 +480,19 @@ struct Superchunk
     }
 
     
-    void setChunkHeightMaps()
+    /*void setChunkHeightMaps()
     {
         for (int x = 0; x < SCX; x++)
            for (int z = 0; z < SCZ; z++)
            {
                if (SCY >= 3)
                {
-                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap);
+                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap.get());
                }
                else
                {
                    heightmapStartingChunk = 1;
-                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap);
+                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap.get());
                }
            }
     }
@@ -480,6 +511,40 @@ struct Superchunk
                     sChunk[x][SCY - 1][z]->applyHeightmap();
                 }
             }
+    }*/
+    
+    void applyHeightmap()
+    {
+        int heightmapOffset = heightmapStartingChunk * CY;
+
+        for (int sx = 0; sx < SCX; sx++)
+        {
+            for (int sz = 0; sz < SCZ; sz++)
+            {
+                for (int y = heightmapOffset; y < heightmapOffset + CY; y++)
+                {
+                    for (int x = 0; x < CX; x++)
+                    {
+                        for (int z = 0; z < CZ; z++)
+                        {
+                            //std::cout << heightmap[x][z] << std::endl;
+
+                            int worldX = (sx * CX) + x;
+                            int worldZ = (sz * CZ) + z;
+
+                            if (y < (heightmapOffset + heightmap[worldX][worldZ]))
+                            {
+                                setWorldBlock(worldX, y, worldZ, DIRT);
+                            }
+                            if (y == (heightmapOffset + heightmap[worldX][worldZ]))
+                            {
+                                setWorldBlock(worldX, y, worldZ, GRASS);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void placeTreesInWorld()
@@ -491,7 +556,7 @@ struct Superchunk
         int randX = 0;
         int randZ = 0;
 
-        srand(static_cast<unsigned int>(SEED));
+        srand(static_cast<unsigned int>(worldSeed));
 
         std::vector<glm::ivec2> treeCoords;
 
@@ -544,5 +609,36 @@ struct Superchunk
         }
     }
 
+    void addWaterToWorld()
+    {
+        int heightmapOffset = heightmapStartingChunk * CY;
+
+        int waterLevel = heightmapOffset + 7;
+
+        for (int sx = 0; sx < SCX; sx++)
+        {
+            for (int sz = 0; sz < SCZ; sz++)
+            {
+                for (int y = heightmapOffset; y < heightmapOffset + CY; y++)
+                {
+                    for (int x = 0; x < CX; x++)
+                    {
+                        for (int z = 0; z < CZ; z++)
+                        {
+                            //std::cout << heightmap[x][z] << std::endl;
+
+                            int worldX = (sx * CX) + x;
+                            int worldZ = (sz * CZ) + z;
+
+                            if (y > (heightmapOffset + heightmap[worldX][worldZ]) && y < waterLevel)
+                            {
+                                setWorldBlock(worldX, y, worldZ, WATER);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 };

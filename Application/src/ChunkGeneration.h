@@ -13,83 +13,86 @@
 
 #include <glm/gtc/noise.hpp>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/unordered_map.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <cstddef>
 
-struct Chunk 
+struct Chunk
 {
-	uint8_t*** blocks;
-	Vertex* vertexes;
+	std::unique_ptr<std::unique_ptr<std::unique_ptr<uint8_t[]>[]>[]> blocks;
+	std::unique_ptr<Vertex[]> vertexes;
 	int elements;
 	bool changed;
 	int worldPosX;
 	int worldPosZ;
 
-	std::unordered_map<uint8_t, uint8_t>* twoSidedBlocks;
-	std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>* threeSidedBlocks;
+	std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
+	std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
 
 	int maxChunkVertices = (CX * CY * CZ * 6 * 6);
-	//VertexBuffer* chunkVertexBuffer;
-	//VertexBufferLayout* chunkBufferLayout;
-	//VertexArray* chunkVertexArray;
-	//IndexBuffer* chunkIndexBuffer;
 	unsigned int vbo;
 	unsigned int vao;
 
-	int heightmap[CX][CZ];
+	//std::array<std::array<int, CZ>, CX> heightmap;
 
-	Chunk()
+	Chunk() :
+		blocks(std::make_unique<std::unique_ptr<std::unique_ptr<uint8_t[]>[]>[]>(CX)),
+		vertexes(std::make_unique<Vertex[]>(CX* CY* CZ * 6 * 6)),
+		elements(0),
+		changed(true),
+		worldPosX(0),
+		worldPosZ(0),
+		twoSidedBlocks(std::make_shared<std::unordered_map<uint8_t, uint8_t>>()),
+		threeSidedBlocks(std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>()),
+		vbo(0),
+		vao(0)
 	{
-		blocks =  new uint8_t ** [CX];
 		for (int i = 0; i < CX; i++) {
-			blocks[i] = new uint8_t * [CY];
+			blocks[i] = std::make_unique<std::unique_ptr<uint8_t[]>[]>(CY);
 			for (int j = 0; j < CY; j++) {
-				blocks[i][j] = new uint8_t[CZ];
+				blocks[i][j] = std::make_unique<uint8_t[]>(CZ);
 			}
 		}
 
-		//// Initialize the blocks array with valid memory addresses
-		//uint8_t* block_data = new uint8_t[CX * CY * CZ];
-		//memset(block_data, 0, CX * CY * CZ * sizeof(uint8_t));
-		//for (int i = 0; i < CX; i++) {
-		//	for (int j = 0; j < CY; j++) {
-		//		memset(blocks[i][j], reinterpret_cast<uintptr_t>(block_data) + (i * CY + j) * CZ, CZ * sizeof(uint8_t));
-		//	}
-		//}
-
-		//memset(blocks[0][0], 0, CX * CY * CZ * sizeof(uint8_t));
-
-		vertexes = new Vertex[CX * CY * CZ * 6 * 6];
-		//memset(blocks, 0, sizeof(blocks));
-		elements = 0;
-		changed = true;
-		worldPosX = 0;
-		worldPosZ = 0;
 		glGenBuffers(1, &vbo);
 		glGenVertexArrays(1, &vao);
-
-		//fillWithAir();
-		//genIndexBuffer();
-
-		//fillWithDirt();
 
 		//generateHightmap();
 	}
 
-	~Chunk()
+	template<class Archive>
+	void serialize(Archive& archive)
 	{
-		for (int i = 0; i < CX; i++) {
-			for (int j = 0; j < CY; j++) {
-				delete[] blocks[i][j];
-			}
-			delete[] blocks[i];
-		}
-		delete[] blocks;
-
-		delete[] vertexes;
+		archive(blocks, vertexes, elements, changed, worldPosX, worldPosZ,
+			twoSidedBlocks, threeSidedBlocks, maxChunkVertices, vbo, vao);
 	}
+
+	/*template<class Archive>
+	static void load_and_construct(cereal::BinaryInputArchive& archive, cereal::construct<Chunk>& construct)
+	{
+		std::unique_ptr<std::unique_ptr<std::unique_ptr<uint8_t[]>[]>[]> blocks;
+		std::unique_ptr<Vertex[]> vertexes;
+		int elements;
+		bool changed;
+		int worldPosX;
+		int worldPosZ;
+		std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
+		std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
+		int maxChunkVertices;
+		unsigned int vbo;
+		unsigned int vao;
+
+		archive(blocks, vertexes, elements, changed, worldPosX, worldPosZ,
+			twoSidedBlocks, threeSidedBlocks, maxChunkVertices, vbo, vao);
+
+		construct(blocks.release(), vertexes.release(), elements, changed, worldPosX, worldPosZ,
+			std::move(twoSidedBlocks), std::move(threeSidedBlocks), maxChunkVertices, vbo, vao);
+	}*/
 
 	uint8_t getBlock(int x, int y, int z)
 	{
@@ -128,38 +131,72 @@ struct Chunk
 						// View from negative x
 						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
 						{
-							genNegXSide(vertexes, &x, &y, &z, type, &i);
+							genNegXSide(vertexes.get(), &x, &y, &z, type, &i);
 						}
-
+						else
+						{
+							if(blocks[x - 1][y][z] == WATER)
+								genNegXSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
 
 						// View from positive x
 						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
 						{
-							genPosXSide(vertexes, &x, &y, &z, type, &i);
+							genPosXSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if (blocks[x + 1][y][z] == WATER)
+								genPosXSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from negative y
 						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
 						{
-							genNegYSide(vertexes, &x, &y, &z, twoSidedBlocks->at(type), &i);
+							genNegYSide(vertexes.get(), &x, &y, &z, twoSidedBlocks->at(type), &i);
+						}
+						else
+						{
+							if (blocks[x][y - 1][z] == WATER)
+								genNegYSide(vertexes.get(), &x, &y, &z, twoSidedBlocks->at(type), &i);
+
 						}
 
 						// View from positive y
 						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
 						{
-							genPosYSide(vertexes, &x, &y, &z, twoSidedBlocks->at(type), &i);
+							genPosYSide(vertexes.get(), &x, &y, &z, twoSidedBlocks->at(type), &i);
+						}
+						else
+						{
+							if (blocks[x][y + 1][z] == WATER)
+								genPosYSide(vertexes.get(), &x, &y, &z, twoSidedBlocks->at(type), &i);
+
 						}
 
 						// View from negative z
 						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
 						{
-							genNegZSide(vertexes, &x, &y, &z, type, &i);
+							genNegZSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if (blocks[x][y][z - 1] == WATER)
+								genNegZSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from positive z
 						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
 						{
-							genPosZSide(vertexes, &x, &y, &z, type, &i);
+							genPosZSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if (blocks[x][y][z + 1] == WATER)
+								genPosZSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 					}
 					else if (threeSidedBlocks->count(type))
@@ -167,77 +204,160 @@ struct Chunk
 						// View from negative x
 						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
 						{
-							genNegXSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+							genNegXSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+						else
+						{
+							if (blocks[x - 1][y][z] == WATER)
+								genNegXSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
 						}
 
 
 						// View from positive x
 						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
 						{
-							genPosXSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+							genPosXSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+						else
+						{
+							if (blocks[x + 1][y][z] == WATER)
+								genPosXSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+
 						}
 
 						// View from negative y
 						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
 						{
-							genNegYSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).second, &i);
+							genNegYSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).second, &i);
+						}
+						else
+						{
+							if (blocks[x][y - 1][z] == WATER)
+								genNegYSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).second, &i);
+
 						}
 
 						// View from positive y
 						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
 						{
-							genPosYSide(vertexes, &x, &y, &z, type, &i);
+							genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if (blocks[x][y + 1][z] == WATER)
+								genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from negative z
 						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
 						{
-							genNegZSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+							genNegZSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+						}
+						else
+						{
+							if (blocks[x][y][z - 1] == WATER)
+								genNegZSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+
 						}
 
 						// View from positive z
 						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
 						{
-							genPosZSide(vertexes, &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+							genPosZSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
 						}
+						else
+						{
+							if (blocks[x][y][z + 1] == WATER)
+								genPosZSide(vertexes.get(), &x, &y, &z, threeSidedBlocks->at(type).first, &i);
+
+						}
+					}
+					else if (type == WATER)
+					{
+						// View from positive y
+						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
+						{
+							genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						/*else
+						{
+							if (blocks[x][y + 1][z] == WATER)
+								genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+
+						}*/
 					}
 					else
 					{
 						// View from negative x
-						if (((x - 1) < 0) || (!blocks[x - 1][y][z]))
+						if ((((x - 1) < 0) || (!blocks[x - 1][y][z])) && !(type == WATER))
 						{
-							genNegXSide(vertexes, &x, &y, &z, type, &i);
+							genNegXSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x - 1][y][z] == WATER) && !(type == WATER))
+								genNegXSide(vertexes.get(), &x, &y, &z, type, &i);
 						}
 
 
 						// View from positive x
-						if (((x + 1) == CX) || (!blocks[x + 1][y][z]))
+						if ((((x + 1) == CX) || (!blocks[x + 1][y][z])) && !(type == WATER))
 						{
-							genPosXSide(vertexes, &x, &y, &z, type, &i);
+							genPosXSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x + 1][y][z] == WATER) && !(type == WATER))
+								genPosXSide(vertexes.get(), &x, &y, &z, type, &i);
 						}
 
 						// View from negative y
-						if (((y - 1) < 0) || (!blocks[x][y - 1][z]))
+						if ((((y - 1) < 0) || (!blocks[x][y - 1][z])) && !(type == WATER))
 						{
-							genNegYSide(vertexes, &x, &y, &z, type, &i);
+							genNegYSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x][y - 1][z] == WATER) && !(type == WATER))
+								genNegYSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from positive y
-						if (((y + 1) == CY) || (!blocks[x][y + 1][z]))
+						if ((((y + 1) == CY) || (!blocks[x][y + 1][z])) && !(type == WATER))
 						{
-							genPosYSide(vertexes, &x, &y, &z, type, &i);
+							genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x][y + 1][z] == WATER) && !(type == WATER))
+								genPosYSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from negative z
-						if (((z - 1) < 0) || (!blocks[x][y][z - 1]))
+						if ((((z - 1) < 0) || (!blocks[x][y][z - 1])) && !(type == WATER))
 						{
-							genNegZSide(vertexes, &x, &y, &z, type, &i);
+							genNegZSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x][y][z - 1] == WATER) && !(type == WATER))
+								genNegZSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 
 						// View from positive z
-						if (((z + 1) == CZ) || (!blocks[x][y][z + 1]))
+						if ((((z + 1) == CZ) || (!blocks[x][y][z + 1])) && !(type == WATER))
 						{
-							genPosZSide(vertexes, &x, &y, &z, type, &i);
+							genPosZSide(vertexes.get(), &x, &y, &z, type, &i);
+						}
+						else
+						{
+							if ((blocks[x][y][z + 1] == WATER) && !(type == WATER))
+								genPosZSide(vertexes.get(), &x, &y, &z, type, &i);
+
 						}
 					}
 
@@ -257,7 +377,7 @@ struct Chunk
 		chunkBufferLayout = &vbl;*/
 		//std::cout << blocks[2][2][2] << std::endl;
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, maxChunkVertices * sizeof(Vertex), vertexes, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, maxChunkVertices * sizeof(Vertex), vertexes.get(), GL_STATIC_DRAW);
 
 		//VertexBuffer vbo(vertex, elements * sizeof(vertex), GL_STATIC_DRAW);
 		//chunkBuffer = &vbo;
@@ -356,89 +476,89 @@ struct Chunk
 		}
 	}
 
-	void generateHightmap()
-	{
-		float heightmapPregen[CX][CZ];
+	//void generateHightmap()
+	//{
+	//	float heightmapPregen[CX][CZ];
 
-		float yFactor = 1.0f / (CX);
-		float xFactor = 1.0f / (CZ);
-		float a = 1.0f;
-		float b = 2.0f;
+	//	float yFactor = 1.0f / (CX);
+	//	float xFactor = 1.0f / (CZ);
+	//	float a = 1.0f;
+	//	float b = 2.0f;
 
-		int index = 0;
+	//	int index = 0;
 
-		for (int row = 0; row < CX; row++)
-		{
-			for (int col = 0; col < CZ; col++)
-			{
-				float x = xFactor * col;
-				float y = yFactor * row;
-				float sum = 0.0f;
-				float freq = a;
-				float scale = b;
+	//	for (int row = 0; row < CX; row++)
+	//	{
+	//		for (int col = 0; col < CZ; col++)
+	//		{
+	//			float x = xFactor * col;
+	//			float y = yFactor * row;
+	//			float sum = 0.0f;
+	//			float freq = a;
+	//			float scale = b;
 
-				// Compute the sum for each octave
-				for (int oct = 0; oct < 4; oct++)
-				{
-					glm::vec2 p(x * freq, y * freq);
-					float val = glm::perlin(p) / scale;
-					sum += val;
-					float result = (sum + 1.0f) / 2.0f;
+	//			// Compute the sum for each octave
+	//			for (int oct = 0; oct < 4; oct++)
+	//			{
+	//				glm::vec2 p(x * freq, y * freq);
+	//				float val = glm::perlin(p) / scale;
+	//				sum += val;
+	//				float result = (sum + 1.0f) / 2.0f;
 
-					// Store in texture buffer
-					heightmapPregen[row][col] = result;
-					freq *= 2.0f;   // Double the frequency
-					scale *= b;
-				}
-			}
-		}
-
-
-		for (int row = 0; row < CX; row++)
-		{
-			for (int col = 0; col < CZ; col++)
-			{
-				index++;
-				heightmap[row][col] = static_cast<int>(heightmapPregen[row][col] * 10);
-				//std::cout << index << " " << heightmap[row][col] << std::endl;
-			}
-		}
-
-	}
-
-	void applyHeightmap()
-	{
-		//int bottomStartingHeight = (CY - 1) - 10;
+	//				// Store in texture buffer
+	//				heightmapPregen[row][col] = result;
+	//				freq *= 2.0f;   // Double the frequency
+	//				scale *= b;
+	//			}
+	//		}
+	//	}
 
 
-		for (int y = 0; y < CY; y++)
-		{
-			for (int x = 0; x < CX; x++)
-			{
-				for (int z = 0; z < CZ; z++)
-				{
-					//std::cout << heightmap[x][z] << std::endl;
-					if (y < heightmap[x][z])
-					{
-						setBlock(x, y, z, DIRT);
-					}
-					if (y == heightmap[x][z])
-					{
-						setBlock(x, y, z, GRASS);
-					}
-				}
-			}
-		}
-	}
+	//	for (int row = 0; row < CX; row++)
+	//	{
+	//		for (int col = 0; col < CZ; col++)
+	//		{
+	//			index++;
+	//			heightmap[row][col] = static_cast<int>(heightmapPregen[row][col] * 10);
+	//			//std::cout << index << " " << heightmap[row][col] << std::endl;
+	//		}
+	//	}
 
-	void getHeightmap(int8_t** sChunkHeightmap)
-	{
-		for (int x = 0; x < CX; x++)
-			for (int z = 0; z < CZ; z++)
-			{
-				heightmap[x][z] = sChunkHeightmap[(worldPosX * 16) + x][(worldPosZ * 16) + z];
-			}
-	}
+	//}
+
+	//void applyHeightmap()
+	//{
+	//	//int bottomStartingHeight = (CY - 1) - 10;
+
+
+	//	for (int y = 0; y < CY; y++)
+	//	{
+	//		for (int x = 0; x < CX; x++)
+	//		{
+	//			for (int z = 0; z < CZ; z++)
+	//			{
+	//				//std::cout << heightmap[x][z] << std::endl;
+	//				if (y < heightmap[x][z])
+	//				{
+	//					setBlock(x, y, z, DIRT);
+	//				}
+	//				if (y == heightmap[x][z])
+	//				{
+	//					setBlock(x, y, z, GRASS);
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+
+	//void getHeightmap(int8_t** sChunkHeightmap)
+	//{
+	//	for (int x = 0; x < CX; x++)
+	//		for (int z = 0; z < CZ; z++)
+	//		{
+	//			heightmap[x][z] = sChunkHeightmap[(worldPosX * 16) + x][(worldPosZ * 16) + z];
+	//		}
+	//}
 
 };
 

@@ -283,6 +283,13 @@ int main(void)
 	
 	//sChunk.fillSuperchunk();
 
+	std::string input;
+	std::cout << "Enter a world seed: ";
+	std::cin >> input;
+	int seed = std::stoi(input);
+
+	sChunk->worldSeed = seed;
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -379,8 +386,8 @@ int main(void)
 		glfwPollEvents();
 	}
 
-	//delete pc;
-	//delete sChunk;
+	delete pc;
+	delete sChunk;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

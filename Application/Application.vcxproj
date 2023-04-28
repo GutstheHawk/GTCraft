@@ -214,6 +214,11 @@
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\UserInputs.h" />
     <ClInclude Include="src\UserInputsRotateObject.h" />
+    <ClInclude Include="src\vendor\cereal\archives\binary.hpp" />
+    <ClInclude Include="src\vendor\cereal\cereal.hpp" />
+    <ClInclude Include="src\vendor\cereal\types\array.hpp" />
+    <ClInclude Include="src\vendor\cereal\types\memory.hpp" />
+    <ClInclude Include="src\vendor\cereal\types\vector.hpp" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />

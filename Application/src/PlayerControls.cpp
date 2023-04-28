@@ -68,14 +68,14 @@ void PlayerControls::ProcessInputs()
 	if (saveState)
 	{
 		saveState = false;
-		saveWorld(*sChunk, "saves/world.bin");
+		//saveWorld(*sChunk, "saves/world.bin");
 	}
 
 	if (loadState)
 	{
 		loadState = false;
-		sChunk->~Superchunk();
-		sChunk = loadWorld("saves/world.bin");
+		//sChunk->~Superchunk();
+		//sChunk = loadWorld("saves/world.bin");
 	}
 
 	float xoffset = xpos - lastX;
@@ -104,7 +104,7 @@ void PlayerControls::ProcessInputs()
 	camera->SetCameraFront(glm::normalize(front));
 
 	camera->SetCameraRight();
-	camera->SetCameraUp();
+	camera->UpdateCameraUp();
 
 	camera->UpdateView();
 
