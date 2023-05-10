@@ -15,7 +15,7 @@ You as the player are able to explore a randomly generated world and place block
 - Randomly generated trees, foliage, and water to populate the world
 
 **Features soon to be added:**
-- Saving and loading of the gameworld (Almost complete)
+- Saving and loading of the gameworld
 - Player physics and collision detection
 - Adaptive lighting depending on time of day and light source placement
 - Chunk caching in saved files and infinite world generation
