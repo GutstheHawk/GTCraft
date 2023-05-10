@@ -1,12 +1,12 @@
 #pragma once
-#define SCX 16
+#define SCX 12
 #define SCY 5
-#define SCZ 16
+#define SCZ 12
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
 #include "VertexArray.h"
-#include "ChunkGeneration.h"
+#include "Chunk.h"
 #include "Camera.h"
 #include "Shader.h"
 
@@ -136,9 +136,6 @@ struct Superchunk
         glm::vec3 rayOrigin = rayVecs.first;
         glm::vec3 rayEnd = rayVecs.second;
 
-        //std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
-        //std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
-
         std::vector<std::pair<glm::ivec3, float>> intersectedCubes;
 
         glm::ivec3 originChunkWorldPos(static_cast<int>(floor(rayOrigin.x / 16.0f)), static_cast<int>(floor(rayOrigin.y / 16.0f)), static_cast<int>(floor(rayOrigin.z / 16.0f)));
@@ -155,11 +152,6 @@ struct Superchunk
         {
             searchChunkForCube(intersectedCubes, originChunkWorldPos, rayOrigin, rayEnd);
         }
-        //unsigned int chunkPosZ = static_cast<int>(glm::mod(rayOrigin.z, 16.0f));
-
-        //std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
-        //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
-        //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
         // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
@@ -172,7 +164,6 @@ struct Superchunk
         if (!intersectedCubes.empty())
         {
             glm::ivec3 closestCube = intersectedCubes.front().first;
-            //std::cout << "Closest Cube World Coords: " << to_string(closestCube) << std::endl;
 
             setWorldBlock(closestCube.x, closestCube.y, closestCube.z, 0);
         }
@@ -208,8 +199,7 @@ struct Superchunk
                             float distance = glm::distance(rayOrigin, intersectionPoint);
 
                             // Compute the world position of the cube
-                            //glm::ivec3 cubeCoords = glm::floor(cubePos + 0.5f); // add 0.5f to center the cube around its position
-                            glm::ivec3 worldCoords = glm::ivec3(cubeWorldPos); // compute the world coordinates of the cube
+                            glm::ivec3 worldCoords = glm::ivec3(cubeWorldPos);
 
                             // Add the coordinates of the cube and its distance from the camera to the list of intersected cubes
                             intersectedCubes.push_back(std::make_pair(worldCoords, distance));
@@ -227,9 +217,6 @@ struct Superchunk
         glm::vec3 rayOrigin = rayVecs.first;
         glm::vec3 rayEnd = rayVecs.second;
 
-        //std::cout << "Starting Pos: " << to_string(rayOrigin) << std::endl;
-        //std::cout << "Ending Pos: " << to_string(rayEnd) << std::endl;
-
         std::vector<std::pair<glm::ivec3, float>> intersectedCubes;
 
         glm::ivec3 originChunkWorldPos(static_cast<int>(floor(rayOrigin.x / 16.0f)), static_cast<int>(floor(rayOrigin.y / 16.0f)), static_cast<int>(floor(rayOrigin.z / 16.0f)));
@@ -244,11 +231,6 @@ struct Superchunk
         {
             searchChunkForCube(intersectedCubes, originChunkWorldPos, rayOrigin, rayEnd);
         }
-        //unsigned int chunkPosZ = static_cast<int>(glm::mod(rayOrigin.z, 16.0f));
-
-        //std::cout << "originChunkWorldPosX: " << originChunkWorldPos.x << std::endl;
-        //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
-        //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
         // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
@@ -292,10 +274,6 @@ struct Superchunk
                 break;
             }
 
-
-
-            // do something with closestCube...
-            //playerChunk->setBlock(closestCube.x % 16, closestCube.y % 16, closestCube.z % 16, 0);
         }
 
     }
@@ -304,9 +282,6 @@ struct Superchunk
     {
         glm::vec3 rayOrigin = rayCoords.first;
         glm::vec3 rayEnd = rayCoords.second;
-
-        //std::cout << "Closest Cube World Coords: " << to_string(closestCube) << std::endl;
-        // do something with closestCube...
 
         // Compute the distance between the intersection point and each face of the cube
         glm::vec3 intersectionPoint = rayOrigin + closestCube.second * glm::normalize(rayEnd - rayOrigin);
@@ -334,7 +309,6 @@ struct Superchunk
 
         return std::make_pair(closestCube.first, closestFace);
 
-        //return std::make_pair(glm::ivec3(0), PositiveX); // return a default value if no intersection is found
     }
 
 
@@ -362,9 +336,6 @@ struct Superchunk
         y %= CY;
         z %= CZ;
 
-        //if (!sChunk[cx][cy][cz])
-            //sChunk[cx][cy][cz] = new Chunk();
-
         sChunk[cx][cy][cz]->setBlock(x, y, z, type);
     }
 
@@ -374,8 +345,8 @@ struct Superchunk
                 for (int z = 0; z < SCZ; z++)
                     if (sChunk[x][y][z])
                     {
-                        glm::mat4 projection = cam->ReturnProjection();
-                        glm::mat4 view = cam->ReturnView();
+                        glm::mat4 projection = cam->GetProjection();
+                        glm::mat4 view = cam->GetView();
                         glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(x * CX, y * CY, z * CZ));
 
                         glm::mat4 pvm = projection * view * model;
@@ -384,35 +355,6 @@ struct Superchunk
                         sChunk[x][y][z]->render();
                     }
     }
-
-    /*void fillSuperchunk()
-    {
-        for (int x = 0; x < SCX; x++)
-            for (int y = 0; y < SCY; y++)
-                for (int z = 0; z < SCZ; z++)
-                    if (!sChunk[x][y][z])
-                    {
-                        Chunk* chunk = new Chunk();
-
-
-                        if (y == 0 || y == 1)
-                        {
-                            chunk->fillWithBlock(STONE);
-                        }
-                        if (y > 1)
-                        {
-                            chunk->fillWithAir();
-                        }
-
-                        chunk->worldPosX = x;
-                        chunk->worldPosZ = z;
-
-                        chunk->twoSidedBlocks = twoSidedBlocks;
-                        chunk->threeSidedBlocks = threeSidedBlocks;
-
-                        sChunk[x][y][z] = chunk;
-                    }
-    }*/
 
     void generateSuperchunkHeightmap(float inSeed)
     {
@@ -462,9 +404,8 @@ struct Superchunk
                             result = (sum + 1.0f) / 2.0f;
 
                             // Store in texture buffer
-                            //std::cout << static_cast<unsigned int>(result * 16) << std::endl;
                             heightmap[(x * 16) + col][(z * 16) + row] = static_cast<uint8_t>(result * 16);
-                            freq *= 2.0f;   // Double the frequency
+                            freq *= 2.0f;
                             scale *= b;
                         }
                     }
@@ -473,40 +414,6 @@ struct Superchunk
         }
 
     }
-
-
-    /*void setChunkHeightMaps()
-    {
-        for (int x = 0; x < SCX; x++)
-           for (int z = 0; z < SCZ; z++)
-           {
-               if (SCY >= 3)
-               {
-                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap.get());
-               }
-               else
-               {
-                   heightmapStartingChunk = 1;
-                   sChunk[x][heightmapStartingChunk][z]->getHeightmap(heightmap.get());
-               }
-           }
-    }
-
-    void applyHeightmaps()
-    {
-        for (int x = 0; x < SCX; x++)
-            for (int z = 0; z < SCZ; z++)
-            {
-                if (SCY >= 3)
-                {
-                    sChunk[x][2][z]->applyHeightmap();
-                }
-                else
-                {
-                    sChunk[x][SCY - 1][z]->applyHeightmap();
-                }
-            }
-    }*/
 
     void applyHeightmap(uint8_t groundType, uint8_t surfaceType)
     {
@@ -522,8 +429,6 @@ struct Superchunk
                     {
                         for (int z = 0; z < CZ; z++)
                         {
-                            //std::cout << heightmap[x][z] << std::endl;
-
                             int worldX = (sx * CX) + x;
                             int worldZ = (sz * CZ) + z;
 
@@ -562,13 +467,11 @@ struct Superchunk
                 randZ = (rand() % highRangeZ) + lowRange;
 
                 generateTree(glm::ivec2(randX, randZ));
-                //treeCoords.push_back(glm::ivec2(randX, randZ));
             }
     }
 
     void generateTree(glm::ivec2 treePos)
     {
-
         // Determine the position of the trunk base
         int x = treePos.x;
         int z = treePos.y;
@@ -587,14 +490,19 @@ struct Superchunk
         std::uniform_real_distribution<float> dist(0, 1);
 
         // Create the leaves
-        for (int dy = y + 2; dy < y + 6; dy++) {
-            for (int dx = x - 2; dx <= x + 2; dx++) {
-                for (int dz = z - 2; dz <= z + 2; dz++) {
-                    if (dx != x || dz != z || dy != y + 5) { // Prevent leaves from replacing trunk or appearing on the top trunk block
+        for (int dy = y + 2; dy < y + 6; dy++)
+        {
+            for (int dx = x - 2; dx <= x + 2; dx++)
+            {
+                for (int dz = z - 2; dz <= z + 2; dz++)
+                {
+                    if (dx != x || dz != z || dy != y + 5)
+                    {
                         float distanceToTrunk = glm::distance(glm::vec3(x, dy, z), glm::vec3(dx, dy, dz));
 
                         // Create leaves with a random chance, closer to the trunk means a higher chance
-                        if (dist(rng) < (1.0f - (distanceToTrunk / 2.5f))) {
+                        if (dist(rng) < (1.0f - (distanceToTrunk / 2.5f)))
+                        {
                             if (!(getWorldBlock(dx, dy, dz) == OAKLOG))
                                 setWorldBlock(dx, dy, dz, LEAVES);
                         }
@@ -620,8 +528,6 @@ struct Superchunk
                     {
                         for (int z = 0; z < CZ; z++)
                         {
-                            //std::cout << heightmap[x][z] << std::endl;
-
                             int worldX = (sx * CX) + x;
                             int worldZ = (sz * CZ) + z;
 

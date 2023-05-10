@@ -35,11 +35,6 @@ Texture::Texture(const std::string& path)
 		std::cout << stbi_failure_reason() << std::endl;
 		__debugbreak();
 	}
-
-	/*if (m_LocalBuffer)
-	{
-		stbi_image_free(m_LocalBuffer);
-	}*/
 }
 
 Texture::Texture(const std::string& path, int offset_x, int offset_y, int width, int height)
@@ -71,11 +66,6 @@ Texture::Texture(const std::string& path, int offset_x, int offset_y, int width,
 		std::cout << stbi_failure_reason() << std::endl;
 		__debugbreak();
 	}
-
-	/*if (m_LocalBuffer)
-	{
-		stbi_image_free(m_LocalBuffer);
-	}*/
 }
 
 Texture::~Texture()

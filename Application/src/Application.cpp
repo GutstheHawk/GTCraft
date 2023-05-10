@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <cassert>
+#include <windows.h>
 
 #include "VertexBuffer.h"
 #include "VertexArray.h"
@@ -15,7 +16,7 @@
 #include "UserInputs.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "ChunkGeneration.h"
+#include "Chunk.h"
 #include "Superchunk.h"
 #include "Inventory.h"
 #include "MainMenu.h"
@@ -34,6 +35,8 @@ struct UIVertex
 
 int main(void)
 {
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
 	if (!glfwInit())
 	{
 		printf("Failed to initialize GLFW.");
@@ -42,11 +45,10 @@ int main(void)
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-	const int windowWidth = 1920;
-	const int windowHeight = 1080;
+	const int windowWidth = 1280;
+	const int windowHeight = 720;
 
 	const char* windowTitle = "GTCraft";
 
@@ -73,8 +75,13 @@ int main(void)
 		return -1;
 	}
 
-	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(glDebugOutput, NULL);
+	//glEnable(GL_DEBUG_OUTPUT);
+	//glDebugMessageCallback(glDebugOutput, NULL);
+
+	glfwSetWindowSizeCallback(window, windowSizeCallback);
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetCursorPosCallback(window, mousePosCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -137,21 +144,14 @@ int main(void)
 	skyboxVA.Bind();
 	skyboxVA.Unbind();
 
-	//Atlas Shader Code
+	//Initialize shaders
 	Shader atlasShader("res/shaders/chunkVertexShader.shader", "res/shaders/chunkFragmentShader.shader");
 	atlasShader.Bind();
-	//glLinkProgram(atlasShader);
 
-	//Atlas Shader Code
 	Shader skyboxShader("res/shaders/skyboxVertexShader.shader", "res/shaders/skyboxFragmentShader.shader");
-	//glLinkProgram(skyboxShader);
-
-	Shader rayShader("res/shaders/RayVertex.shader", "res/shaders/RayFragment.shader");
 
 	//Setup camera and player controls
 	Camera* cam = new Camera();
-	cam->SetRayShader(&rayShader);
-	cam->SetWorldShader(&atlasShader);
 	glm::vec3 mapCenter = glm::vec3((SCX * 16) / 2, 3 * 16, (SCZ * 16) / 2);
 	cam->Teleport(mapCenter);
 
@@ -160,18 +160,9 @@ int main(void)
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
 	glfwSetWindowUserPointer(window, pc);
 
-	glfwSetKeyCallback(window, keyCallback);
-	glfwSetCursorPosCallback(window, mousePosCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonCallback);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//Texture texture("res/textures/dirt.png");
 	Texture texture("res/textures/alternate_atlas.png");
 	texture.Bind(GL_TEXTURE_2D, 0);
 	atlasShader.SetUniform1i("u_Texture", 0);
-
-	//atlasShader.SetUniform2f("v_atlasOffsetSize", 16.0f, 16.0f);
-	//atlasShader.SetUniform2f("v_atlasIndexes", 2.0f, 15.0f);
 
 	//Skybox
 	std::vector<std::string> faces
@@ -261,15 +252,14 @@ int main(void)
 		}
 		else
 		{
-			glm::mat4 projection = cam->ReturnProjection();
-			glm::mat4 view = cam->ReturnView();
+			glm::mat4 projection = cam->GetProjection();
+			glm::mat4 view = cam->GetView();
 
 			glDepthMask(GL_FALSE);
 			skyboxShader.Bind();
 			glm::mat4 sbView = glm::mat4(glm::mat3(view));
 			skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
 			skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
-			// skybox cube
 			skyboxVA.Bind();
 			skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -320,8 +310,6 @@ int main(void)
 			}
 		}
 
-
-
 		ImGui::Render();
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -329,9 +317,7 @@ int main(void)
 		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
-		/* Poll for and process events */
 		glfwPollEvents();
 	}
 

@@ -10,19 +10,15 @@ void PlayerControls::ProcessInputs()
 {
 	//Main Keys
 	if (W_PRESSED)
-		//printf("You pressed the w key!\n");
 		camera->MoveForward();
 
 	if (A_PRESSED)
-		//printf("You pressed the a key!\n");
 		camera->StrafeLeft();
 
 	if (S_PRESSED)
-		//printf("You pressed the s key!\n");
 		camera->MoveBackward();
 
 	if (D_PRESSED)
-		//printf("You pressed the d key!\n");
 		camera->StrafeRight();
 
 	if (SPACE_PRESSED)
@@ -44,11 +40,9 @@ void PlayerControls::ProcessInputs()
 		camera->Rotate(glm::vec2(0.05f, 0.0f));
 
 	//Mouse Input
-
 	if (LEFT_MOUSE_PRESSED)
 	{
 		leftMousePresses++;
-		//camera->CastRay(4.0f);
 		if (leftMousePresses == 1 && !inventoryToggle)
 		{
 			sChunk->breakBlock(camera);
@@ -58,7 +52,6 @@ void PlayerControls::ProcessInputs()
 	if (RIGHT_MOUSE_PRESSED)
 	{
 		rightMousePresses++;
-		//camera->CastRay(4.0f);
 		if (rightMousePresses == 1 && !inventoryToggle)
 		{
 			sChunk->placeBlock(camera, selectedBlockType);

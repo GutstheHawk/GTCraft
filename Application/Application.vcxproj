@@ -196,7 +196,7 @@
     <ClInclude Include="src\gui\MainMenu.h" />
     <ClInclude Include="src\world\BlockDefinitions.h" />
     <ClInclude Include="src\player\Camera.h" />
-    <ClInclude Include="src\world\ChunkGeneration.h" />
+    <ClInclude Include="src\world\Chunk.h" />
     <ClInclude Include="src\opengl\GL_Debug.h" />
     <ClInclude Include="src\opengl\IndexBuffer.h" />
     <ClInclude Include="src\gui\Inventory.h" />
@@ -518,15 +518,11 @@
     <None Include="res\shaders\atlasFragmentShader.shader" />
     <None Include="res\shaders\chunkFragmentShader.shader" />
     <None Include="res\shaders\chunkVertexShader.shader" />
-    <None Include="res\shaders\fragmentShaderBasic.shader" />
     <None Include="res\shaders\atlasVertexShader.shader" />
-    <None Include="res\shaders\RayFragment.shader" />
-    <None Include="res\shaders\RayVertex.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
     <None Include="res\shaders\skyboxVertexShader.shader" />
     <None Include="res\shaders\uiFragmentShader.shader" />
     <None Include="res\shaders\uiVertexShader.shader" />
-    <None Include="res\shaders\VertexShaderBasic.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

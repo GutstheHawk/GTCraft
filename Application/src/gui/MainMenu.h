@@ -62,7 +62,7 @@ static void showMainMenu(GLFWwindow* window, Superchunk* sChunk, bool* startMenu
 	ImGui::Text("- Move Up and Down: Space and Shift keys");
 	ImGui::Text("- Remove Block: Left Click");
 	ImGui::Text("- Place Block: Right Click");
-	ImGui::Text("- Open Inventory: E key");
+	ImGui::Text("- Open and Close Inventory: E key");
 	ImGui::Text("- Quick Select Blocks: 0-9 keys");
 	ImGui::Spacing();
 	ImGui::Text("- Fullscreen: F1");

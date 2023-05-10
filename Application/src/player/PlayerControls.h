@@ -19,8 +19,6 @@ public:
 	bool loadState = 0;
 
 	bool inventoryToggle = false;
-	//float cachedXPos = 0.0f;
-	//float cachedYPos = 0.0f;
 
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;
@@ -48,7 +46,6 @@ public:
 	float lastY = 0.0f;
 
 	PlayerControls(Camera*, Superchunk* sChunk);
-	//~PlayerControls();
 	void ProcessInputs();
 };
 

@@ -3,13 +3,23 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "PlayerControls.h"
-//#include "Camera.h"
 
+void windowSizeCallback(GLFWwindow* window, int width, int height)
+{
+	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
+
+	float FOV = pc->camera->FOV;
+	float nearClip = pc->camera->nearClip;
+	float farClip = pc->camera->farClip;
+
+	glViewport(0, 0, width, height);
+	float aspectRatio = (float)width / (float)height;
+	pc->camera->Projection = glm::perspective(glm::radians(FOV), aspectRatio, nearClip, farClip);
+}
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 
-    //Camera* cam = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
 	PlayerControls* pc = reinterpret_cast<PlayerControls*>(glfwGetWindowUserPointer(window));
 
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
@@ -17,10 +27,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		if (pc->inventoryToggle == true)
 		{
 			pc->inventoryToggle = false;
-
-			//pc->camera->SetCameraPosition(pc->cachedCameraPos);
-			//pc->camera->SetCameraFront(pc->cachedCameraFront);
-			//pc->camera->SetCameraUp(pc->cachedCameraUp);
 
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -32,15 +38,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 			pc->inventoryToggle = true;
 
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-			//pc->cachedCameraPos = pc->camera->GetCameraPosition();
-			//pc->cachedCameraFront = pc->camera->GetCameraFront();
-			//pc->cachedCameraUp = pc->camera->GetCameraUp();
 		}
-
 	}
 
-
+	//Num Keys
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 		pc->selectedBlockType = DIRT;
 
@@ -71,30 +72,23 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	if (key == GLFW_KEY_0 && action == GLFW_PRESS)
 		pc->selectedBlockType = SPONGE;
 
-    //Main Keys
-    //if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-    //    //printf("You pressed the w key!\n");
-    //    cam->MoveForward();
+	//Main Keys
 	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		//printf("You pressed the a key!\n");
 		pc->W_PRESSED = true;
     if (key == GLFW_KEY_W && action == GLFW_RELEASE)
 		pc->W_PRESSED = false;
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS)
-        //printf("You pressed the a key!\n");
         pc->A_PRESSED = true;
 	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 		pc->A_PRESSED = false;
 
     if (key == GLFW_KEY_S && action == GLFW_PRESS)
-        //printf("You pressed the s key!\n");
 		pc->S_PRESSED = true;
 	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
 		pc->S_PRESSED = false;
 
     if (key == GLFW_KEY_D && action == action == GLFW_PRESS)
-        //printf("You pressed the d key!\n");
 		pc->D_PRESSED = true;
 	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		pc->D_PRESSED = false;
@@ -110,24 +104,48 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		pc->LEFT_SHIFT_PRESSED = false;
 
     //Function Keys
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, 1);
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		if (pc->inventoryToggle == true)
+		{
+			pc->inventoryToggle = false;
+
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else if (pc->inventoryToggle == false)
+		{
+			glfwSetWindowShouldClose(window, 1);
+		}
+	}
 
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
     {
         GLFWmonitor* monitor = glfwGetWindowMonitor(window);
-        if (monitor == NULL)
-        {
-            GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
-            glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-			//glfwSetWindowMonitor(window, primaryMonitor, 0, 0, 1920, 1080, mode->refreshRate);
-        }
-        else
-        {
+
+		float FOV = pc->camera->FOV;
+		float nearClip = pc->camera->nearClip;
+		float farClip = pc->camera->farClip;
+
+		if (monitor == NULL)
+		{
+			GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+			glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+			glViewport(0, 0, mode->width, mode->height);
+			float aspectRatio = (float)mode->width / (float)mode->height;
+			pc->camera->Projection = glm::perspective(glm::radians(FOV), aspectRatio, nearClip, farClip);
+		}
+		else
+		{
 			glfwSetWindowMonitor(window, NULL, 200, 200, 1280, 720, 0);
-            //glfwSetWindowMonitor(window, NULL, 200, 200, 1920, 1080, 0);
-        }
+
+			int width, height;
+			glfwGetFramebufferSize(window, &width, &height);
+			glViewport(0, 0, width, height);
+			float aspectRatio = (float)width / (float)height;
+			pc->camera->Projection = glm::perspective(glm::radians(FOV), aspectRatio, nearClip, farClip);
+		}
     }
 
 	if (key == GLFW_KEY_F2 && action == GLFW_PRESS)
@@ -139,27 +157,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	{
 		pc->loadState = true;
 	}
-
-	//Object Rotation Keys
-    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-        pc->UP_PRESSED = true;
-	if (key == GLFW_KEY_UP && action == GLFW_RELEASE)
-		pc->UP_PRESSED = false;
-	
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-        pc->LEFT_PRESSED = true;
-	if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE)
-		pc->LEFT_PRESSED = false;
-
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		pc->DOWN_PRESSED = true;
-	if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
-		pc->DOWN_PRESSED = false;
-
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		pc->RIGHT_PRESSED = true;
-	if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE)
-		pc->RIGHT_PRESSED = false;
 
 }
 
