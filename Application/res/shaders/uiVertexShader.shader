@@ -28,8 +28,7 @@ void main()
     vec2 texCoord = texCoords[texIndex];
     vec2 atlasOffsetSize = vec2(16.0, 16.0);
 
-    //v_TexCoord = (texCoord / atlasOffsetSize) + (atlasIndexes / atlasOffsetSize);
-    v_TexCoord = texCoord;
+    v_TexCoord = (texCoord / atlasOffsetSize) + (atlasIndexes / atlasOffsetSize);
 
     gl_Position = vec4(position, 1.0);
 }

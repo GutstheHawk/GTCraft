@@ -193,6 +193,7 @@
     <ClCompile Include="src\opengl\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\gui\MainMenu.h" />
     <ClInclude Include="src\world\BlockDefinitions.h" />
     <ClInclude Include="src\player\Camera.h" />
     <ClInclude Include="src\world\ChunkGeneration.h" />
@@ -523,6 +524,8 @@
     <None Include="res\shaders\RayVertex.shader" />
     <None Include="res\shaders\skyboxFragmentShader.shader" />
     <None Include="res\shaders\skyboxVertexShader.shader" />
+    <None Include="res\shaders\uiFragmentShader.shader" />
+    <None Include="res\shaders\uiVertexShader.shader" />
     <None Include="res\shaders\VertexShaderBasic.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
@@ -668,19 +671,13 @@
     <Text Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Users\tsirl\Downloads\dirt.png" />
     <Image Include="res\textures\alternate_atlas.png" />
-    <Image Include="res\textures\dirt.png" />
-    <Image Include="res\textures\dirtfront.png" />
-    <Image Include="res\textures\skybox.jpg" />
     <Image Include="res\textures\skybox\skybox_back.png" />
     <Image Include="res\textures\skybox\skybox_bottom.png" />
     <Image Include="res\textures\skybox\skybox_front.png" />
     <Image Include="res\textures\skybox\skybox_left.png" />
     <Image Include="res\textures\skybox\skybox_right.png" />
     <Image Include="res\textures\skybox\skybox_top.png" />
-    <Image Include="res\textures\texture_atlas.jpg" />
-    <Image Include="res\textures\TheChernoLogo.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

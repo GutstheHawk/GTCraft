@@ -36,10 +36,8 @@ struct Superchunk
 
     std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
     std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
-    Superchunk(int seed)
+    Superchunk()
     {
-        worldSeed = seed;
-
         twoSidedBlocks = std::make_shared<std::unordered_map<uint8_t, uint8_t>>();
         threeSidedBlocks = std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>();
 
@@ -86,12 +84,7 @@ struct Superchunk
         worldSeed = 0;
         heightmapStartingChunk = 2;
 
-        //fillSuperchunk();
-        generateSuperchunkHeightmap(static_cast<float>(worldSeed));
-        //setChunkHeightMaps();
-        applyHeightmap(DIRT, GRASS);
-        //placeTreesInWorld();
-        //addWaterToWorld();
+
     }
 
     template <class Archive>
@@ -101,19 +94,19 @@ struct Superchunk
             superchunk.twoSidedBlocks, superchunk.threeSidedBlocks);
     }
 
-    /*template<class Archive>
-    void serialize(Archive& archive)
+    void generateSuperchunk()
     {
-        std::unique_ptr<Chunk> sChunk[SCX][SCY][SCZ];
-        std::unique_ptr<int8_t* []> heightmap;
-        int heightmapStartingChunk;
-        std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
-        std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
+        generateSuperchunkHeightmap(static_cast<float>(worldSeed));
+        applyHeightmap(DIRT, GRASS);
+        placeTreesInWorld();
+    }
 
-        archive(sChunk, heightmap, heightmapStartingChunk, twoSidedBlocks, threeSidedBlocks);
 
-        construct(std::move(sChunk), std::move(heightmap), heightmapStartingChunk, std::move(twoSidedBlocks), std::move(threeSidedBlocks));
-    }*/
+    void setSeed(int seed)
+    {
+        worldSeed = seed;
+    }
+
 
     enum CubeFace {
         PositiveX,

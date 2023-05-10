@@ -7,13 +7,6 @@
 #include <sstream>
 #include <cassert>
 
-//#include <glm/vec3.hpp> // glm::vec3
-//#include <glm/vec4.hpp> // glm::vec4
-//#include <glm/mat4x4.hpp> // glm::mat4
-//#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-//#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
-//#include <glm/ext/scalar_constants.hpp> // glm::pi
-
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
@@ -25,6 +18,7 @@
 #include "ChunkGeneration.h"
 #include "Superchunk.h"
 #include "Inventory.h"
+#include "MainMenu.h"
 
 #include "imgui/imgui.h"
 #include <imgui/imgui_impl_glfw.h>
@@ -54,7 +48,7 @@ int main(void)
 	const int windowWidth = 1920;
 	const int windowHeight = 1080;
 
-	const char* windowTitle = "GALINT: MC Clone";
+	const char* windowTitle = "GTCraft";
 
 	GLFWwindow* window;
 
@@ -161,30 +155,7 @@ int main(void)
 	glm::vec3 mapCenter = glm::vec3((SCX * 16) / 2, 3 * 16, (SCZ * 16) / 2);
 	cam->Teleport(mapCenter);
 
-	std::string input;
-	std::cout << "Enter a world seed: ";
-	std::cin >> input;
-	int seed = std::stoi(input);
-
-	Superchunk* sChunk = new Superchunk(seed);
-
-	std::cout << "Do you want to fill the world with lava? [YES or NO]: ";
-	std::cin >> input;
-
-	if (input == "YES")
-	{
-		sChunk->applyHeightmap(GRANITE, GRANITE);
-		sChunk->addWaterToWorld();
-	}
-	else if (input == "maybe")
-	{
-		sChunk->addWaterToWorld();
-		sChunk->placeTreesInWorld();
-	}
-	else
-	{
-		sChunk->placeTreesInWorld();
-	}
+	Superchunk* sChunk = new Superchunk();
 
 	PlayerControls* pc = new PlayerControls(cam, sChunk);
 	glfwSetWindowUserPointer(window, pc);
@@ -220,24 +191,14 @@ int main(void)
 
 	UIVertex* uiVertices = new UIVertex[6];
 
-	float blockUIWidth = (-1.0f + (1.0f / 4.0f));
-	float blockUIHeight = (-1.0f + (1.0f / 4.0f));
-
-	uiVertices[0] = UIVertex{ glm::vec2{-1.0f, -1.0f},				 glm::uvec2{0, pc->selectedBlockType} };
-	uiVertices[1] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
-	uiVertices[2] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
-	uiVertices[3] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
-	uiVertices[4] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
-	uiVertices[5] = UIVertex{ glm::vec2{blockUIWidth,blockUIHeight}, glm::uvec2{2, pc->selectedBlockType} };
-
-	VertexBuffer uiVB(uiVertices, 6 * sizeof(UIVertex), GL_STATIC_DRAW);
+	float blockUIWidth = (-1.0f + static_cast<float>((windowWidth / 8.0f) / windowWidth));
+	float blockUIHeight = (-1.0f + static_cast<float>((windowHeight / 4.5f) / windowHeight));
 
 	VertexBufferLayout uiLayout;
 	uiLayout.Push<float>(2, GL_FALSE);
 	uiLayout.Push<unsigned int>(2, GL_FALSE);
 
 	VertexArray uiVA;
-	uiVA.AddBuffer(uiVB, uiLayout);
 
 	const char* glsl_version = "#version 460";
 
@@ -271,6 +232,9 @@ int main(void)
 	
 	glEnable(GL_CULL_FACE);
 
+	bool startMenuToggle = true;
+	char seed[64] = "0";
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -291,51 +255,72 @@ int main(void)
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		glm::mat4 projection = cam->ReturnProjection();
-		glm::mat4 view = cam->ReturnView();
-
-		glDepthMask(GL_FALSE);
-		skyboxShader.Bind();
-		glm::mat4 sbView = glm::mat4(glm::mat3(view));
-		skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
-		skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
-		// skybox cube
-		skyboxVA.Bind();
-		skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		skyboxVA.Unbind();
-		glDepthMask(GL_TRUE);
-		skyboxShader.Unbind();
-
-		atlasShader.Bind();
-		sChunk->render(cam, &atlasShader);
-		atlasShader.Unbind();
-
-		glDisable(GL_DEPTH_TEST);
-		uiShader.Bind();
-		texture.Bind(GL_TEXTURE_2D, 0);
-		uiShader.SetUniform1i("u_Texture", 0);
-
-		GLuint currentProgram;
-		glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&currentProgram);
-
-		uiVA.Bind();
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		uiVA.Unbind();
-		uiShader.Unbind();
-		glEnable(GL_DEPTH_TEST);
-
-		if(pc->inventoryToggle == true)
+		if (startMenuToggle == true)
 		{
-			static float f = 0.0f;
-			static int counter = 0;
-
-			ImGui::Begin("Blocks");
-
-			renderBlockSelection(pc);
-			
-			ImGui::End();
+			showMainMenu(window, sChunk, &startMenuToggle, seed);
 		}
+		else
+		{
+			glm::mat4 projection = cam->ReturnProjection();
+			glm::mat4 view = cam->ReturnView();
+
+			glDepthMask(GL_FALSE);
+			skyboxShader.Bind();
+			glm::mat4 sbView = glm::mat4(glm::mat3(view));
+			skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
+			skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
+			// skybox cube
+			skyboxVA.Bind();
+			skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			skyboxVA.Unbind();
+			glDepthMask(GL_TRUE);
+			skyboxShader.Unbind();
+
+			atlasShader.Bind();
+			sChunk->render(cam, &atlasShader);
+			atlasShader.Unbind();
+
+			glDisable(GL_DEPTH_TEST);
+			uiShader.Bind();
+			texture.Bind(GL_TEXTURE_2D, 0);
+			uiShader.SetUniform1i("u_Texture", 0);
+
+			GLuint currentProgram;
+			glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&currentProgram);
+
+			uiVA.Bind();
+
+			uiVertices[0] = UIVertex{ glm::vec2{-1.0f, -1.0f},				 glm::uvec2{0, pc->selectedBlockType} };
+			uiVertices[1] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+			uiVertices[2] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+			uiVertices[3] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+			uiVertices[4] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+			uiVertices[5] = UIVertex{ glm::vec2{blockUIWidth,blockUIHeight}, glm::uvec2{2, pc->selectedBlockType} };
+
+			VertexBuffer uiVB(uiVertices, 6 * sizeof(UIVertex), GL_STATIC_DRAW);
+
+			uiVA.AddBuffer(uiVB, uiLayout);
+
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			uiVA.Unbind();
+			uiShader.Unbind();
+			glEnable(GL_DEPTH_TEST);
+
+			if (pc->inventoryToggle == true)
+			{
+				static float f = 0.0f;
+				static int counter = 0;
+
+				ImGui::Begin("Blocks");
+
+				renderBlockSelection(pc);
+
+				ImGui::End();
+			}
+		}
+
+
 
 		ImGui::Render();
 		int display_w, display_h;
