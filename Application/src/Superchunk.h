@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 16
+#define SCX 12
 #define SCY 5
-#define SCZ 16
+#define SCZ 12
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
@@ -43,7 +43,6 @@ struct Superchunk
         twoSidedBlocks = std::make_shared<std::unordered_map<uint8_t, uint8_t>>();
         threeSidedBlocks = std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>();
 
-        // Allocate memory for sChunk using std::make_unique
         for (int x = 0; x < SCX; x++) {
             for (int y = 0; y < SCY; y++) {
                 for (int z = 0; z < SCZ; z++) {
@@ -69,7 +68,6 @@ struct Superchunk
         }
 
 
-        // Allocate memory for heightmap using std::make_unique
         heightmap = std::make_unique<int8_t* []>(SCX * 16);
         for (int i = 0; i < (SCX * 16); i++) {
             heightmap[i] = new int8_t[SCZ * 16];
@@ -168,14 +166,12 @@ struct Superchunk
         //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
         //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
-        // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
             [](const std::pair<glm::ivec3, float>& a, const std::pair<glm::ivec3, float>& b)
             {
                 return a.second < b.second;
             });
 
-        // Select the closest intersected cube
         if (!intersectedCubes.empty())
         {
             glm::ivec3 closestCube = intersectedCubes.front().first;
@@ -199,12 +195,10 @@ struct Superchunk
                 {
                     if (chunkBlocks[x][y][z])
                     {
-                        // Compute the bounding box of the cube
                         glm::vec3 cubeWorldPos = { (chunkWorldPos.x * 16) + x, (chunkWorldPos.y * 16) + y, (chunkWorldPos.z * 16) + z }; // position of the cube in world space
                         glm::vec3 cubeMin = cubeWorldPos;
                         glm::vec3 cubeMax = cubeWorldPos + 1.0f;
 
-                        // Test the ray for intersection with the bounding box
                         float tMin, tMax;
                         if (intersectRayAABB(rayOrigin, glm::normalize(rayEnd - rayOrigin), cubeMin, cubeMax, tMin, tMax))
                         {
@@ -214,11 +208,9 @@ struct Superchunk
                             // Compute the distance from the camera to the intersection point
                             float distance = glm::distance(rayOrigin, intersectionPoint);
 
-                            // Compute the world position of the cube
                             //glm::ivec3 cubeCoords = glm::floor(cubePos + 0.5f); // add 0.5f to center the cube around its position
                             glm::ivec3 worldCoords = glm::ivec3(cubeWorldPos); // compute the world coordinates of the cube
 
-                            // Add the coordinates of the cube and its distance from the camera to the list of intersected cubes
                             intersectedCubes.push_back(std::make_pair(worldCoords, distance));
                         }
                     }
@@ -257,14 +249,12 @@ struct Superchunk
         //std::cout << "originChunkWorldPosY: " << originChunkWorldPos.y << std::endl;
         //std::cout << "originChunkWorldPosZ: " << originChunkWorldPos.z << std::endl;
 
-        // Sort the list of intersected cubes by distance from the camera
         std::sort(intersectedCubes.begin(), intersectedCubes.end(),
             [](const std::pair<glm::ivec3, float>& a, const std::pair<glm::ivec3, float>& b)
             {
                 return a.second < b.second;
             });
 
-        // Select the closest intersected cube
         if (!intersectedCubes.empty())
         {
             glm::ivec3 closestCube = intersectedCubes.front().first;
@@ -350,7 +340,7 @@ struct Superchunk
         int cy = y / CY;
         int cz = z / CZ;
 
-        x %= CX;
+        x %= CX;1
         y %= CY;
         z %= CZ;
 
@@ -468,7 +458,6 @@ struct Superchunk
                             sum += val;
                             result = (sum + 1.0f) / 2.0f;
 
-                            // Store in texture buffer
                             //std::cout << static_cast<unsigned int>(result * 16) << std::endl;
                             heightmap[(x * 16) + col][(z * 16) + row] = static_cast<uint8_t>(result * 16);
                             freq *= 2.0f;   // Double the frequency
@@ -576,14 +565,12 @@ struct Superchunk
     void generateTree(glm::ivec2 treePos)
     {
 
-        // Determine the position of the trunk base
         int x = treePos.x;
         int z = treePos.y;
         int y = (heightmapStartingChunk * 16) + heightmap[x][z] + 1;
 
         int randTreeHeight = (rand() % 4) + 4;
 
-        // Create the trunk
         for (int i = y; i < y + randTreeHeight; i++) {
             setWorldBlock(x, i, z, OAKLOG);
         }
@@ -594,14 +581,19 @@ struct Superchunk
         std::uniform_real_distribution<float> dist(0, 1);
 
         // Create the leaves
-        for (int dy = y + 2; dy < y + 6; dy++) {
-            for (int dx = x - 2; dx <= x + 2; dx++) {
-                for (int dz = z - 2; dz <= z + 2; dz++) {
-                    if (dx != x || dz != z || dy != y + 5) { // Prevent leaves from replacing trunk or appearing on the top trunk block
+        for (int dy = y + 2; dy < y + 6; dy++)
+        {
+            for (int dx = x - 2; dx <= x + 2; dx++)
+            {
+                for (int dz = z - 2; dz <= z + 2; dz++)
+                {
+                    if (dx != x || dz != z || dy != y + 5)
+                    { 
                         float distanceToTrunk = glm::distance(glm::vec3(x, dy, z), glm::vec3(dx, dy, dz));
 
                         // Create leaves with a random chance, closer to the trunk means a higher chance
-                        if (dist(rng) < (1.0f - (distanceToTrunk / 2.5f))) {
+                        if (dist(rng) < (1.0f - (distanceToTrunk / 2.5f)))
+                        {
                             if(!(getWorldBlock(dx, dy, dz) == OAKLOG))
                                 setWorldBlock(dx, dy, dz, LEAVES);
                         }

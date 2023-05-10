@@ -247,24 +247,17 @@ int main(void)
 
 	UIVertex* uiVertices = new UIVertex[6];
 
-	float blockUIWidth = (-1.0f + (1.0f / 4.0f));
-	float blockUIHeight = (-1.0f + (1.0f / 4.0f));
+	float floatWindowWidth = static_cast<float>(windowWidth);
+	float floatWindowHeight = static_cast<float>(windowHeight);
 
-	uiVertices[0] = UIVertex{ glm::vec2{-1.0f, -1.0f},				 glm::uvec2{0, pc->selectedBlockType} };
-	uiVertices[1] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
-	uiVertices[2] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
-	uiVertices[3] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
-	uiVertices[4] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
-	uiVertices[5] = UIVertex{ glm::vec2{blockUIWidth,blockUIHeight}, glm::uvec2{2, pc->selectedBlockType} };
-
-	VertexBuffer uiVB(uiVertices, 6 * sizeof(UIVertex), GL_STATIC_DRAW);
+	float blockUIWidth = (-1.0f + ((floatWindowWidth / 8.0f) / floatWindowWidth));
+	float blockUIHeight = (-1.0f + ((floatWindowHeight / 4.5f) / floatWindowHeight));
 
 	VertexBufferLayout uiLayout;
 	uiLayout.Push<float>(2, GL_FALSE);
 	uiLayout.Push<unsigned int>(2, GL_FALSE);
 
 	VertexArray uiVA;
-	uiVA.AddBuffer(uiVB, uiLayout);
 
 	const char* glsl_version = "#version 460";
 
@@ -340,7 +333,7 @@ int main(void)
 		skyboxShader.Bind();
 		//glUseProgram(skyboxShader);
 		//glm::mat4 sbProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
-		glm::mat4 sbView = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
+		glm::mat4 sbView = glm::mat4(glm::mat3(view));
 		skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
 		skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
 		// skybox cube
@@ -348,7 +341,7 @@ int main(void)
 		skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		skyboxVA.Unbind();
-		glDepthMask(GL_TRUE);; // set depth function back to default
+		glDepthMask(GL_TRUE);;
 		skyboxShader.Unbind();
 
 		/*atlasShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
@@ -373,8 +366,20 @@ int main(void)
 		//std::cout << "Current Shader ID: " << currentProgram << std::endl;
 
 		uiVA.Bind();
+
+		uiVertices[0] = UIVertex{ glm::vec2{-1.0f, -1.0f},				 glm::uvec2{0, pc->selectedBlockType} };
+		uiVertices[1] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+		uiVertices[2] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+		uiVertices[3] = UIVertex{ glm::vec2{-1.0f, blockUIHeight},		 glm::uvec2{3, pc->selectedBlockType} };
+		uiVertices[4] = UIVertex{ glm::vec2{blockUIWidth, -1.0f},		 glm::uvec2{1, pc->selectedBlockType} };
+		uiVertices[5] = UIVertex{ glm::vec2{blockUIWidth,blockUIHeight}, glm::uvec2{2, pc->selectedBlockType} };
+
+		VertexBuffer uiVB(uiVertices, 6 * sizeof(UIVertex), GL_STATIC_DRAW);
+
+		uiVA.AddBuffer(uiVB, uiLayout);
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		uiVA.Unbind(); // set depth function back to default
+		uiVA.Unbind();
 		uiShader.Unbind();
 		glEnable(GL_DEPTH_TEST);
 
@@ -383,7 +388,7 @@ int main(void)
 			static float f = 0.0f;
 			static int counter = 0;
 
-			ImGui::Begin("Blocks");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Blocks");
 
 			renderBlockSelection(pc);
 			

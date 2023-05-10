@@ -33,21 +33,16 @@ Camera::~Camera()
 
 std::pair<glm::vec3, glm::vec3> Camera::CastRay(float length)
 {
-	// Get the dimensions of the viewport
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 
-	// Compute the center of the screen
 	float x = viewport[2] / 2.0f;
 	float y = viewport[3] / 2.0f;
 
-	// Compute the direction of the ray
 	glm::vec3 rayDirection = glm::normalize(cameraFront);
 
-	// Compute the starting point of the ray
 	glm::vec3 rayOrigin = cameraPos + rayDirection;
 
-	// Cast the ray
 	glm::vec3 rayEnd = rayOrigin + rayDirection * length;
 
 	//RenderRay(rayOrigin, rayEnd);

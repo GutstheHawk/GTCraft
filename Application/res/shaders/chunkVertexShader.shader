@@ -1,5 +1,4 @@
 #version 460 core
-#extension GL_NV_gpu_shader5 : enable
 
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec3 texIndex_lightingVal_type;
