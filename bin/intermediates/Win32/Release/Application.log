@@ -1,0 +1,35 @@
+﻿  Application.cpp
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(13,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\dev\GALINT-MC-Clone\Application\src\player\UserInputs.h(164,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\player\UserInputs.h(165,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\gui\Inventory.h(83,23): warning C4018: '<': signed/unsigned mismatch
+C:\dev\GALINT-MC-Clone\Application\src\gui\MainMenu.h(42,45): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\gui\MainMenu.h(42,34): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\gui\MainMenu.h(43,89): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\gui\MainMenu.h(43,51): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\dev\GALINT-MC-Clone\Application\src\Application.cpp(236,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Camera.cpp
+  IndexBuffer.cpp
+  PlayerControls.cpp
+  Shader.cpp
+  Texture.cpp
+  glm.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  stb_image.cpp
+  VertexArray.cpp
+  VertexBuffer.cpp
+     Creating library C:\dev\GALINT-MC-Clone\bin\Win32\Release\Application.lib and object C:\dev\GALINT-MC-Clone\bin\Win32\Release\Application.exp
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  Previous IPDB was built with incompatible compiler, fall back to full compilation.
+C:\dev\GALINT-MC-Clone\Application\src\OpenGL\VertexBufferLayout.h(21): warning C4715: 'VertexBufferElement::GetSizeOfType': not all control paths return a value
+  All 3206 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
+  Application.vcxproj -> C:\dev\GALINT-MC-Clone\bin\Win32\Release\Application.exe

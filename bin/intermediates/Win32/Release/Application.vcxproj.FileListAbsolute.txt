@@ -1,0 +1,6 @@
+C:\dev\GALINT\bin\intermediates\Win32\Release\Application.vcxproj.MdMergeInputs.cache
+C:\dev\GALINT\bin\intermediates\Win32\Release\Application.vcxproj.cppwinrt_plat.cache
+C:\dev\GALINT\bin\intermediates\Win32\Release\Application.vcxproj.cppwinrt_comp.cache
+C:\dev\GALINT-MC-Clone\bin\intermediates\Win32\Release\Application.vcxproj.MdMergeInputs.cache
+C:\dev\GALINT-MC-Clone\bin\intermediates\Win32\Release\Application.vcxproj.cppwinrt_plat.cache
+C:\dev\GALINT-MC-Clone\bin\intermediates\Win32\Release\Application.vcxproj.cppwinrt_comp.cache
