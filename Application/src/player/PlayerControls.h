@@ -5,8 +5,6 @@ class PlayerControls
 {
 public:
 	Camera* camera;
-<<<<<<< Updated upstream:Application/src/PlayerControls.h
-=======
 	Superchunk* sChunk;
 
 	uint8_t selectedBlockType = DIRT;
@@ -19,7 +17,6 @@ public:
 	bool loadState = 0;
 
 	bool inventoryToggle = false;
->>>>>>> Stashed changes:Application/src/player/PlayerControls.h
 
 	bool W_PRESSED = false;
 	bool A_PRESSED = false;
@@ -41,12 +38,8 @@ public:
 	float lastX = 0.0f;
 	float lastY = 0.0f;
 
-<<<<<<< Updated upstream:Application/src/PlayerControls.h
-	PlayerControls(Camera*);
-	~PlayerControls();
-=======
+
 	PlayerControls(Camera*, Superchunk* sChunk);
->>>>>>> Stashed changes:Application/src/player/PlayerControls.h
 	void ProcessInputs();
 };
 

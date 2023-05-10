@@ -38,10 +38,6 @@ void PlayerControls::ProcessInputs()
 	if (RIGHT_PRESSED)
 		camera->Rotate(glm::vec2(0.05f, 0.0f));
 
-<<<<<<< Updated upstream:Application/src/PlayerControls.cpp
-	//Mouse Input
-=======
-
 	//Mouse Input
 	if (LEFT_MOUSE_PRESSED)
 	{
@@ -76,7 +72,6 @@ void PlayerControls::ProcessInputs()
 		//sChunk = loadWorld("saves/world.bin");
 	}
 
->>>>>>> Stashed changes:Application/src/player/PlayerControls.cpp
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos;
 	lastX = xpos;
@@ -101,13 +96,8 @@ void PlayerControls::ProcessInputs()
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	camera->SetCameraFront(glm::normalize(front));
 
-<<<<<<< Updated upstream:Application/src/PlayerControls.cpp
-	camera->SetCameraRight();
-	camera->SetCameraUp();
-=======
 	camera->UpdateCameraRight();
 	camera->UpdateCameraUp();
->>>>>>> Stashed changes:Application/src/player/PlayerControls.cpp
 
 	camera->UpdateView();
 }

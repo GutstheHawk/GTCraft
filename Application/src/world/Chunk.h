@@ -60,8 +60,6 @@ struct Chunk
 
 		glGenBuffers(1, &vbo);
 		glGenVertexArrays(1, &vao);
-
-		//generateHightmap();
 	}
 
 	template<class Archive>

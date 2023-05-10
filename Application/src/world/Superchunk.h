@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 16
+#define SCX 12
 #define SCY 5
-#define SCZ 16
+#define SCZ 12
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
@@ -33,29 +33,15 @@ struct Superchunk
 
     int worldSeed;
     int heightmapStartingChunk;
-    
-    std::shared_ptr<std::set<uint8_t>> transparentBlocks;
+
     std::shared_ptr<std::unordered_map<uint8_t, uint8_t>> twoSidedBlocks;
     std::shared_ptr<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>> threeSidedBlocks;
-
     Superchunk()
     {
-        transparentBlocks = std::make_shared<std::set<uint8_t>>();
+
         twoSidedBlocks = std::make_shared<std::unordered_map<uint8_t, uint8_t>>();
         threeSidedBlocks = std::make_shared<std::unordered_map<uint8_t, std::pair<uint8_t, uint8_t>>>();
 
-        transparentBlocks->insert(WATER);
-        transparentBlocks->insert(GLASS);
-
-        twoSidedBlocks->insert({ OAKLOG, OAKLOGTOP });
-        twoSidedBlocks->insert({ MARBLESIDE, MARBLETOP });
-        twoSidedBlocks->insert({ MELONTOP, MELONSIDE });
-
-        threeSidedBlocks->insert({ GRASS, std::make_pair(GRASSSIDE, DIRT) });
-        threeSidedBlocks->insert({ CACTUSTOP, std::make_pair(CACTUSSIDE, CACTUSBOTTOM) });
-        threeSidedBlocks->insert({ PUMPKINTOP, std::make_pair(JACKOLANTERNLIT, PUMPKINSIDE) });
-
-        // Allocate memory for sChunk
         for (int x = 0; x < SCX; x++) {
             for (int y = 0; y < SCY; y++) {
                 for (int z = 0; z < SCZ; z++) {
@@ -74,7 +60,6 @@ struct Superchunk
                     sChunk[x][y][z]->worldPosX = x;
                     sChunk[x][y][z]->worldPosZ = z;
 
-                    sChunk[x][y][z]->transparentBlocks = transparentBlocks;
                     sChunk[x][y][z]->twoSidedBlocks = twoSidedBlocks;
                     sChunk[x][y][z]->threeSidedBlocks = threeSidedBlocks;
                 }
@@ -82,15 +67,27 @@ struct Superchunk
         }
 
 
-        // Allocate memory for heightmap
         heightmap = std::make_unique<int8_t* []>(SCX * 16);
         for (int i = 0; i < (SCX * 16); i++) {
             heightmap[i] = new int8_t[SCZ * 16];
         }
 
+        twoSidedBlocks->insert({ OAKLOG, OAKLOGTOP });
+        twoSidedBlocks->insert({ MARBLESIDE, MARBLETOP });
+        twoSidedBlocks->insert({ MELONTOP, MELONSIDE });
+
+        threeSidedBlocks->insert({ GRASS, std::make_pair(GRASSSIDE, DIRT) });
+        threeSidedBlocks->insert({ CACTUSTOP, std::make_pair(CACTUSSIDE, CACTUSBOTTOM) });
+        threeSidedBlocks->insert({ PUMPKINTOP, std::make_pair(JACKOLANTERNLIT, PUMPKINSIDE) });
+
         worldSeed = 0;
         heightmapStartingChunk = 2;
 
+        //fillSuperchunk();
+        //generateSuperchunkHeightmap(static_cast<float>(worldSeed));
+        //setChunkHeightMaps();
+        //applyHeightmap(DIRT, GRASS);
+        //placeTreesInWorld();
         //addWaterToWorld();
     }
 
