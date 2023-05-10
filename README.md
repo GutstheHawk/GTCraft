@@ -26,3 +26,6 @@ Technologies Used:
 - GLM math library
 - imGUI
 - Cereal
+
+How To Play:
+Simply download the main branch to your PC and launch the Application.exe file inside of the Application folder
