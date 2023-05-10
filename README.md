@@ -28,7 +28,7 @@ You as the player are able to explore a randomly generated world and place block
 - Cereal
 
 **How To Play:**\
-Simply download the main branch to your PC and launch the Application.exe file inside of the Application folder
+Simply download the main branch to your PC and launch the GTCraft.exe file inside of the Application folder
 
 **Credits:**\
 Main Developer - Brandon Molitor\
