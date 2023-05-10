@@ -201,8 +201,6 @@ int main(void)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-	bool show_demo_window = true;
-	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	int window_width, window_height;
@@ -302,7 +300,7 @@ int main(void)
 				static float f = 0.0f;
 				static int counter = 0;
 
-				ImGui::Begin("Blocks");
+				ImGui::Begin("Blocks", NULL, ImGuiWindowFlags_NoCollapse);
 
 				renderBlockSelection(pc);
 
