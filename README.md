@@ -5,7 +5,7 @@
 A game I chose to create for my senior capstone project for my undergrad degree in Computer Science. It was developed as a solo venture over the course of about 3 months.
 
 This build of the game was designed to roughly replicate the limited sandbox environment of Minecraft Classic.
-You as the player are able to explore a randomly generated world and place blocks to your liking much like the early version of this now world-renowned game.
+You as the player are able to explore a randomly generated world and place blocks to your liking, much like the early version of the now world-renowned game.
 
 **The game currently features:**
 - FPS-style first person camera controls
@@ -29,3 +29,9 @@ You as the player are able to explore a randomly generated world and place block
 
 **How To Play:**\
 Simply download the main branch to your PC and launch the Application.exe file inside of the Application folder
+
+**Credits:**\
+Main Developer - Brandon Molitor\
+All included libraries use the MIT license and are OK for distribution.\
+Texture Atlas by Rhodox - Painterly Pack - https://resourcepack.net/painterly-resource-pack/#gsc.tab=0 \
+Skybox Texture by Finniespin - https://garrysmods.org/download/12004/skybox-minecraft
