@@ -1,4 +1,4 @@
-# GTCraft - An OpenGL Minecraft Clone
+# GTCraft - A Minecraft-Style Creative Game
 
 ![alt text](https://github.com/GutstheHawk/GTCraft/blob/main/Application/res/screenshots/GTCraft.png?raw=true)
 
