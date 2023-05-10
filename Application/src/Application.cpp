@@ -30,12 +30,6 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-
-//static std::array<Vertex, 24> CreateCube(float x, float y, float z)
-//{
-//	Vertex v0;
-//}
-
 #pragma pack(push, 1)
 struct UIVertex
 {
@@ -46,8 +40,6 @@ struct UIVertex
 
 int main(void)
 {
-
-	/* Initialize the library */
 	if (!glfwInit())
 	{
 		printf("Failed to initialize GLFW.");
@@ -61,14 +53,11 @@ int main(void)
 
 	const int windowWidth = 1920;
 	const int windowHeight = 1080;
-	//const int windowWidth = 1920;
-	//const int windowHeight = 1080;
 
 	const char* windowTitle = "GALINT: MC Clone";
 
 	GLFWwindow* window;
 
-	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(
 		windowWidth,
 		windowHeight,
@@ -82,7 +71,6 @@ int main(void)
 		return -1;
 	}
 
-	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
 	if (glewInit() != GLEW_OK)
@@ -92,7 +80,6 @@ int main(void)
 	}
 
 	glEnable(GL_DEBUG_OUTPUT);
-	//glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(glDebugOutput, NULL);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -155,20 +142,6 @@ int main(void)
 	skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
 	skyboxVA.Bind();
 	skyboxVA.Unbind();
-
-	//Atlas vertex buffer, vertex array, and index buffer GL_DYNAMIC_DRAW 24 * 16 * 16 * 16 * sizeof(Vertex)
-	/*VertexBuffer atlasVB(nullptr, 24 * 16 * 16 * 16 * sizeof(Vertex), GL_DYNAMIC_DRAW);
-
-	VertexBufferLayout atlasLayout;
-	atlasLayout.Push<float>(3, GL_FALSE);
-	atlasLayout.Push<float>(2, GL_FALSE);
-
-	VertexArray atlasVA;
-	atlasVA.AddBuffer(atlasVB, atlasLayout);
-
-	IndexBuffer ib(indices, 36);
-	ib.Bind();*/
-
 
 	//Atlas Shader Code
 	Shader atlasShader("res/shaders/chunkVertexShader.shader", "res/shaders/chunkFragmentShader.shader");
@@ -295,23 +268,12 @@ int main(void)
 
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	//glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 	
 	glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CW);
-
-	//Block* chunk = generateChunk();
-	//printChunk(chunk);
-	
-	//sChunk.fillSuperchunk();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-		/*Render here */
-		//glClearColor(250.0f / 255.0f, 119.0f / 255.0f, 110.0f / 255.0f, 1.0f);
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -324,7 +286,6 @@ int main(void)
 
 		pc->ProcessInputs();
 
-		//glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -332,15 +293,10 @@ int main(void)
 
 		glm::mat4 projection = cam->ReturnProjection();
 		glm::mat4 view = cam->ReturnView();
-		glm::mat4 model = cam->ReturnModel();
 
-		//atlasShader.Unbind();
-
-		glDepthMask(GL_FALSE);  // change depth function so depth test passes when values are equal to depth buffer's content
+		glDepthMask(GL_FALSE);
 		skyboxShader.Bind();
-		//glUseProgram(skyboxShader);
-		//glm::mat4 sbProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
-		glm::mat4 sbView = glm::mat4(glm::mat3(view)); // remove translation from the view matrix
+		glm::mat4 sbView = glm::mat4(glm::mat3(view));
 		skyboxShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
 		skyboxShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &sbView[0][0]);
 		// skybox cube
@@ -348,17 +304,9 @@ int main(void)
 		skyboxTexture.Bind(GL_TEXTURE_CUBE_MAP, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		skyboxVA.Unbind();
-		glDepthMask(GL_TRUE);; // set depth function back to default
+		glDepthMask(GL_TRUE);
 		skyboxShader.Unbind();
 
-		/*atlasShader.SetUniformMatrix4fv("projection", 1, GL_FALSE, &projection[0][0]);
-		atlasShader.SetUniformMatrix4fv("view", 1, GL_FALSE, &view[0][0]);
-		atlasShader.SetUniformMatrix4fv("model", 1, GL_FALSE, &model[0][0]);*/
-
-		glm::mat4 pvm = projection * view * model;
-		//atlasShader.SetUniformMatrix4fv("pvm", 1, GL_FALSE, &pvm[0][0]);
-
-		//startingChunk.render();
 		atlasShader.Bind();
 		sChunk->render(cam, &atlasShader);
 		atlasShader.Unbind();
@@ -370,11 +318,10 @@ int main(void)
 
 		GLuint currentProgram;
 		glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&currentProgram);
-		//std::cout << "Current Shader ID: " << currentProgram << std::endl;
 
 		uiVA.Bind();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		uiVA.Unbind(); // set depth function back to default
+		uiVA.Unbind();
 		uiShader.Unbind();
 		glEnable(GL_DEPTH_TEST);
 
@@ -383,7 +330,7 @@ int main(void)
 			static float f = 0.0f;
 			static int counter = 0;
 
-			ImGui::Begin("Blocks");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Blocks");
 
 			renderBlockSelection(pc);
 			

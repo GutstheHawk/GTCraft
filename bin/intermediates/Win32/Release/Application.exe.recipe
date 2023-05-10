@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev\GALINT\bin\Win32\Release\Application.exe</FullPath>
+      <FullPath>C:\dev\GALINT-MC-Clone\bin\Win32\Release\Application.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
