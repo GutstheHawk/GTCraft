@@ -1,7 +1,7 @@
 #pragma once
-#define SCX 12
+#define SCX 14
 #define SCY 5
-#define SCZ 12
+#define SCZ 14
 
 #include <GL/glew.h>
 #include "VertexBuffer.h"
