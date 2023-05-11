@@ -22,7 +22,7 @@ You as the player are able to explore a randomly generated world and place block
 
 **Technologies Used:**
 - C++ with Visual Studio
-- OpenGL with GLFW
+- OpenGL with GLFW and GLEW
 - GLM math library
 - imGUI
 - Cereal
