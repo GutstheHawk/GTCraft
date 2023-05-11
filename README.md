@@ -1,4 +1,4 @@
-# GTCraft - A Minecraft-Style Creative Game
+# GTCraft - A Minecraft-Style Building Game
 
 ![alt text](https://github.com/GutstheHawk/GTCraft/blob/main/Application/res/screenshots/GTCraft.png?raw=true)
 
@@ -12,7 +12,7 @@ You as the player are able to explore a randomly generated world and place block
 - A limited size gameworld randomly generated using GLM's Perlin Noise implementation
 - Block placing and breaking
 - A palette of 32 different blocks accessible to the player through an in-game GUI
-- Randomly generated trees, foliage, and water to populate the world
+- Randomly generated trees to populate the world
 
 **Features soon to be added:**
 - Saving and loading of the gameworld
