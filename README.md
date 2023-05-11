@@ -30,7 +30,7 @@ You as the player are able to explore a randomly generated world and place block
 - Cereal
 
 **How To Play:**\
-Simply download the NewMain branch to your PC and launch the GTCraft.exe file inside of the Application folder.\
+Simply download the NewMain branch to your PC and launch the GTCraft.exe file inside of the Application folder.
 
 **Controls:**
 - Move Player: WASD keys and mouse movement
