@@ -7,6 +7,8 @@ A game I chose to create for my senior capstone project for my undergrad degree 
 This build of the game was designed to roughly replicate the limited sandbox environment of Minecraft Classic.
 You as the player are able to explore a randomly generated world and place blocks to your liking, much like the early version of the now world-renowned game.
 
+**Note: This is a Windows only program as of now. I cannot guarantee it will work as intended on any other operating system.*
+
 **The game currently features:**
 - FPS-style first person camera controls
 - A limited size gameworld randomly generated using GLM's Perlin Noise implementation
@@ -28,9 +30,20 @@ You as the player are able to explore a randomly generated world and place block
 - Cereal
 
 **How To Play:**\
-Simply download the main branch to your PC and launch the GTCraft.exe file inside of the Application folder
+Simply download the main branch to your PC and launch the GTCraft.exe file inside of the Application folder.\
+**Note: If you just wish to test the game and not build the project yourself, I recommend only downloading the Application folder. This will significantly reduce download size.*
 
-**Credits:**\
+**Controls:**
+- Move player: WASD keys and mouse movement
+- MoveUp and Down: Space and Shift keys
+- Remove Block: Left Click
+- Place Block: Right Click
+- Open Inventory: E key
+- Quick Select Blocks: 0-9 keys
+- Fullscreen: F1
+- Exit Program: ESC
+
+**Credits:**
 Main Developer - Brandon Molitor\
 All included libraries use the MIT license and are OK for distribution.\
 Texture Atlas by Rhodox - Painterly Pack - https://resourcepack.net/painterly-resource-pack/#gsc.tab=0 \
