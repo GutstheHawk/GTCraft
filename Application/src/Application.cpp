@@ -219,7 +219,6 @@ int main(void)
 	float lastFrame = 0.0f;
 
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	
 	glEnable(GL_CULL_FACE);
 
